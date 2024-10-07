@@ -1,7 +1,11 @@
 class Move
   attr_reader :value
 
-  VALUES = ['Rock', 'Paper', 'Scissors']
+  VALUES = {
+  's' => 'Scissors',
+  'r' => 'Rock',
+  'p' => 'Paper'
+}
 
   def initialize(value)
     @value = value
@@ -64,7 +68,7 @@ class Human < Player
 
     loop do
       puts "What's your name?"
-      name = gets.chomp
+      name = gets.chomp.capitalize
 
       break unless name == ''
       puts "Enter your name!"
@@ -75,14 +79,24 @@ class Human < Player
     self.name = name
   end
 
+  def convert(input)
+    choices = Move::VALUES
+
+    choices.each do |abbrev, choice|
+      return choice if input.downcase == abbrev || input.capitalize == choice
+    end
+
+    ''
+  end
+
   def choose
     choice = nil
 
     loop do
       puts "Please choose Rock, Paper, or Scissors."
-      choice = gets.chomp.capitalize
+      choice = convert(gets.chomp)
 
-      break if Move::VALUES.include? choice
+      break if Move::VALUES.values.include? choice
       puts "Error: choose Rock, Paper, or Scissors."
     end
 
@@ -96,7 +110,7 @@ class Computer < Player
   end
 
   def choose
-    self.move = Move.new(Move::VALUES.sample)
+    self.move = Move.new(Move::VALUES.values.sample)
   end
 end
 
