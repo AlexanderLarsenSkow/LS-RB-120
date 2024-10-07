@@ -87,36 +87,44 @@ class Computer < Player
 end
 
 class Score
-  attr_accessor :human, :computer
+  attr_accessor :points
 
   SCORE_TO_WIN = 3
 
   def initialize
-    @human = 0
-    @computer = 0
+    @points = 0
   end
 
-  def game_over?
-    human == SCORE_TO_WIN || computer == SCORE_TO_WIN
+  def won?
+    points == SCORE_TO_WIN
   end
 
-  def display_game_over
-    system "clear"
-    puts "That's game! Nice!"
+  def display(computer, other_score)
+    puts "You: #{points} | #{computer}: #{other_score}"
   end
 
-  def display
-    puts "You: #{human} | Computer: #{computer}"
+  def add(value)
+    self.points += value
+  end
+
+  def >(other_score)
+    points > other_score.points
+  end
+
+  def <(other_score)
+    points < other_score.points
   end
 
 end
 
 class RPSgame
-  attr_accessor :human, :computer
+  attr_accessor :human, :computer, :human_score, :computer_score
 
   def initialize
     @human = Human.new
     @computer = Computer.new
+    @human_score = Score.new
+    @computer_score = Score.new
 
   end
 
@@ -133,14 +141,14 @@ class RPSgame
     puts "#{computer.name} chose #{computer.move}."
   end
 
-  def display_winner(scores)
+  def display_winner
     if human.move > computer.move
+      human_score.add 1
       puts "You won!"
-      scores.human += 1
 
     elsif human.move < computer.move
+      computer_score.add 1
       puts "#{computer.name} won!"
-      scores.computer += 1
 
     else
       puts "You and #{computer.name} tied!"
@@ -163,20 +171,32 @@ class RPSgame
     false
   end
 
+  def game_over?
+    human_score.won? || computer_score.won?
+  end
+
+  def display_grand_winner
+    if human_score > computer_score && human_score.won?
+      puts "Congratulations! You are the grand winner #{human.name}!"
+
+    else
+      puts "Oh no! #{computer.name} took the day. There he is now dancing and laughing at you!"
+
+    end
+  end
+
   def play
     display_welcome_message
-    scores = Score.new
 
     loop do
       human.choose
       computer.choose
       display_moves
-      display_winner(scores)
-      scores.display
+      display_winner
+      human_score.display(computer.name, computer_score.points)
 
-      if scores.game_over?
-        scores.display_game_over
-        sleep 3
+      if game_over?
+        display_grand_winner
         break
       end
 
