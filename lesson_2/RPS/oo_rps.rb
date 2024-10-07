@@ -1,11 +1,15 @@
 class Move
   attr_reader :value
 
-  VALUES = {
+  CHOICES = {
   's' => 'Scissors',
   'r' => 'Rock',
   'p' => 'Paper'
 }
+
+  def self.choices
+    CHOICES.values
+  end
 
   def initialize(value)
     @value = value
@@ -80,7 +84,7 @@ class Human < Player
   end
 
   def convert(input)
-    choices = Move::VALUES
+    choices = Move::CHOICES
 
     choices.each do |abbrev, choice|
       return choice if input.downcase == abbrev || input.capitalize == choice
@@ -96,7 +100,7 @@ class Human < Player
       puts "Please choose Rock, Paper, or Scissors."
       choice = convert(gets.chomp)
 
-      break if Move::VALUES.values.include? choice
+      break if Move.choices.include? choice
       puts "Error: choose Rock, Paper, or Scissors."
     end
 
@@ -110,7 +114,7 @@ class Computer < Player
   end
 
   def choose
-    self.move = Move.new(Move::VALUES.values.sample)
+    self.move = Move.new(Move.choices.sample)
   end
 end
 
