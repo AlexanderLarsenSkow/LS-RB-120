@@ -37,11 +37,25 @@ class Move
 end
 
 class Player
-  attr_accessor :move, :name
+  attr_accessor :move, :name, :score
 
   def initialize
     set_name
+    @score = Score.new
   end
+
+  def to_s
+    name
+  end
+
+  def display_score(other_player)
+    puts "#{self}: #{score} | #{other_player}: #{other_player.score}"
+  end
+
+  def won?
+    score == Score::SCORE_TO_WIN
+  end
+
 end
 
 class Human < Player
@@ -95,16 +109,16 @@ class Score
     @points = 0
   end
 
-  def won?
-    points == SCORE_TO_WIN
+  def gain_point
+    self.points += 1
   end
 
-  def display(computer, other_score)
-    puts "You: #{points} | #{computer}: #{other_score}"
+  def to_s
+    points.to_s
   end
 
-  def add(value)
-    self.points += value
+  def ==(other_score)
+    points == other_score
   end
 
   def >(other_score)
@@ -118,14 +132,11 @@ class Score
 end
 
 class RPSgame
-  attr_accessor :human, :computer, :human_score, :computer_score
+  attr_accessor :human, :computer
 
   def initialize
     @human = Human.new
     @computer = Computer.new
-    @human_score = Score.new
-    @computer_score = Score.new
-
   end
 
   def display_welcome_message
@@ -143,11 +154,11 @@ class RPSgame
 
   def display_winner
     if human.move > computer.move
-      human_score.add 1
+      human.score.gain_point
       puts "You won!"
 
     elsif human.move < computer.move
-      computer_score.add 1
+      computer.score.gain_point
       puts "#{computer.name} won!"
 
     else
@@ -167,16 +178,15 @@ class RPSgame
     end
 
     system "clear"
-    return true if choice.start_with?('Y')
-    false
+    choice.start_with?('Y')
   end
 
   def game_over?
-    human_score.won? || computer_score.won?
+    human.won? || computer.won?
   end
 
   def display_grand_winner
-    if human_score > computer_score && human_score.won?
+    if human.won?
       puts "Congratulations! You are the grand winner #{human.name}!"
 
     else
@@ -193,7 +203,7 @@ class RPSgame
       computer.choose
       display_moves
       display_winner
-      human_score.display(computer.name, computer_score.points)
+      human.display_score(computer)
 
       if game_over?
         display_grand_winner

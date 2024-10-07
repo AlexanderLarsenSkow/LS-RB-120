@@ -1,0 +1,6 @@
+# Refactoring Score Class
+
+This class should now provide collaborator objects for the Human and Computer subclasses.
+
+We can display grand winners on this class by looking at the other classes points.
+
