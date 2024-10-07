@@ -57,6 +57,8 @@ class Player
   end
 
   def display_score(other_player)
+    sleep 1.4
+    system "clear"
     puts "#{self}: #{score} | #{other_player}: #{other_player.score}"
   end
 
@@ -78,6 +80,7 @@ class Human < Player
       puts "Enter your name!"
     end
 
+    system "clear"
     puts "It's nice to meet you, #{name}!"
 
     self.name = name
@@ -159,6 +162,8 @@ class RPSgame
 
   def display_welcome_message
     puts "Welcome to Rock, Paper, Scissors!"
+    sleep 2
+    system "clear"
   end
 
   def display_goodbye_message
@@ -167,10 +172,12 @@ class RPSgame
 
   def display_moves
     puts "You chose #{human.move}."
+    sleep 1
     puts "#{computer.name} chose #{computer.move}."
   end
 
   def display_winner
+    sleep 1
     if human.move > computer.move
       human.score.gain_point
       puts "You won!"
