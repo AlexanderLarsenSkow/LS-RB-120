@@ -1,0 +1,62 @@
+Things I want to add to Rock Paper Scissors!
+
+First: Scoreboard
+
+The idea here will be to add a score. I think that will be an instance variable, or state, for the RPSgame class.
+It could be an entire class on its own though...
+Like, we could go in and make it a class with two states, player_score and comptuer_score...
+  or those scores could be in a hash... hmmmm.
+
+I kind of love and hate this haha. I've been doing this for a while but trying to figure out the right way to do things here is tricky.
+
+Okay so:
+  Score Class
+  two instance variables
+
+  what about making inheritable classes for score? class player_score and class computer_score
+  Is there a benefit to doing it this way?
+  Inheritance: they get everything from the superclass, which in this case is score.
+  It was nice with Human and Computer because there was a decent amount of complexity... I think this one we don't need it to get
+  crazy
+
+  Things it should do:
+    track instance variables for computer score and player score
+    compare scores for the ultimate winner.
+    should also be collaborator objects for RPSgame.
+    
+    I built it all wrong. Hahahah.
+    I need a score class with one state.
+    Then I use score objects for the computer and human score as instance variables for the game.
+    if one of the scores gets to the win score, we end the game outright.
+    The only downside of that is we can't have a display score now... Wait, we can! We use another object. hahaha.
+    This is the way to go. Yep yep.
+
+
+  Lizard and Spock should be fairly easy additions...
+  I'm more curious how to handle a conversion in OO where I have abbreviations for each class.
+  I think now making classes, especially for 5 different ones, will make it much easier.
+  That way I can just have win and lose logic in each move subclass.
+  A hash where small strings point at the big strings is the right way to go for sure.
+
+  yml file? should I bother? Probably.
+
+
+
+  What about this one? Keeping track of the move choices for the computer and the player.
+  History class? Interesting. Basically the data structure could be a hash: player: [move1, move2, etc]
+    computer: [move1, move2, etc]
+  it could also just be arrays named human_moves / computer_moves
+  not sure there's a need for a hash.
+
+  you could also use the Human and Computer class objects as collaborators for this class.
+  I'm not sure how it would relate to the RPSgame class... I think it would have to touch something there.
+  With every turn we add choices to each array... then we also have a display button to see the history...
+
+  Can prompt the user between turns if they want to see the move history. Interesting.
+
+  Yeah this one is a little bit tough but it's good. We're trying to get good at OO right so it's going to be challenging.
+  Just keep it up my man.
+
+  Computer Personalities.
+  This one could be fun. I think it would be fun to have each character like talk to you before rounds start.
+
