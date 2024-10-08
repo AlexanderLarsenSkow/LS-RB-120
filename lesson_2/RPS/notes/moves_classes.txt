@@ -1,0 +1,25 @@
+Planning for Moves sub classes
+
+Each move gets its own subclass and < and > methods
+
+computer chooses from an array of moves objects
+
+player chooses a string input that... corresponds to one of the objects... hmm.
+I wonder if there's a certain data structure I could use here.
+So in the current version, we get the string from the user and that determines what kind of move it is in the Move class.
+
+But this time, we want to input something: 'r' 'rock' for rock.new
+'s' 'scissors' for scissors.new
+etc.
+
+We could create a new data structure where an array points at the new move object.
+
+{
+ 's' => scissors.new
+}
+
+The other issue is: where does this object live? oh no. It can't live in the Move class because it's the super class.
+
+{
+ ['s', 'scissors'] => Scissors.new
+}
