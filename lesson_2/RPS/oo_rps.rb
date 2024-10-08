@@ -238,40 +238,44 @@ class Score
 end
 
 class History
-  attr_reader :move_records
-  
-  def initialize
+  attr_reader :move_records, :human, :computer
+
+  def initialize(human, computer)
     @move_records = {
       human: [],
       computer: []
-    } 
+    }
+
+    @human = human
+    @computer = computer
   end
-  
-  def add_moves(human_move, computer_move) 
+
+  def add_moves(human_move, computer_move)
     move_records[:human] << human_move
     move_records[:computer] << computer_move
   end
-  
+
   def display_human_moves
-    move_records[:human].join(',')
+    move_records[:human].join(', ')
   end
-  
+
   def display_computer_moves
-    move_records[:computer].join(',')
+    move_records[:computer].join(', ')
   end
-  
+
   def to_s
-    "Your moves: #{display_human_moves} | Computer's moves: #{display_computer_moves}"
+    "#{human.name}'s moves: #{display_human_moves} | #{computer.name}'s moves: #{display_computer_moves}"
   end
-  
+
 end
 
 class RPSgame
-  attr_accessor :human, :computer
+  attr_accessor :human, :computer, :history
 
   def initialize
     @human = Human.new
     @computer = Computer.new
+    @history = History.new(human, computer)
   end
 
   def display_welcome_message
@@ -285,9 +289,14 @@ class RPSgame
   end
 
   def display_moves
-    puts "You chose #{human.move}."
+    human_move = human.move
+    computer_move = computer.move
+
+    puts "You chose #{human_move}."
     sleep 1
-    puts "#{computer.name} chose #{computer.move}."
+    puts "#{computer.name} chose #{computer_move}."
+
+    history.add_moves(human_move, computer_move)
   end
 
   def display_winner
@@ -305,12 +314,26 @@ class RPSgame
     end
   end
 
+  def display_history
+    choice = nil
+
+    loop do
+      puts "Do you want to see the move history? Y / N?"
+      choice = gets.chomp.upcase.strip
+
+      break if choice.start_with?('Y') || choice.start_with?('N')
+      puts "Enter Y / N"
+    end
+
+    puts history if choice.start_with?('Y')
+  end
+
   def play_again?
     choice = ''
 
     loop do
-      puts "Do you want to play again? Enter Y / N"
-      choice = gets.chomp.upcase
+      puts "Do you want to play again? Y / N"
+      choice = gets.chomp.upcase.strip
 
       break if choice.start_with?('Y') || choice.start_with?('N')
       puts "Error."
@@ -325,6 +348,7 @@ class RPSgame
   end
 
   def display_grand_winner
+    system "clear"
     if human.won?
       puts "Congratulations! You are the grand winner #{human.name}!"
 
@@ -349,6 +373,7 @@ class RPSgame
         break
       end
 
+      display_history
       break unless play_again?
     end
 

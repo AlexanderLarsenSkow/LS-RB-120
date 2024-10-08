@@ -1,0 +1,21 @@
+Okay: History class.
+
+We want to keep track of the history of moves from the computer and the player.
+So, in essence, we need a data structure that's held in an instance variable within the class.
+
+Something like:
+
+{
+  human: [all moves]
+  computer: [all moves]
+}
+
+or we could do two different arrays.
+
+I think the hash probably makes more sense. Then we can output the entire history with the to_s method, which
+  just outputs the array joined together with commas between each entry.
+
+Add to the array with every move cycle.
+
+Also ask the user if they want to display the move history after every turn.
+Where should this display method be? history class or Human class?
