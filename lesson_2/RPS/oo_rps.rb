@@ -1,30 +1,35 @@
 class Move
-  attr_reader :value
-
+  
   CHOICES = {
-  's' => 'Scissors',
-  'r' => 'Rock',
-  'p' => 'Paper'
+    ['s', 'scissors'] => Scissors.new,
+    ['r', 'rock'] => Rock.new,
+    ['p', 'paper'] => Paper.new,
+    ['sp', 'spock'] => Spock.new,
+    ['l', 'lizard'] => Lizard.new
 }
 
   def self.choices
     CHOICES.values
   end
 
-  def initialize(value)
-    @value = value
-  end
-
   def scissors?
-    value == 'Scissors'
+    self.class == Scissors
   end
 
   def rock?
-    value == 'Rock'
+    self.class == Rock
   end
 
   def paper?
-    value == 'Paper'
+    self.class == Paper
+  end
+  
+  def spock?
+    self.class == Spock
+  end
+  
+  def lizard?
+    self.class == Lizard
   end
 
   def >(other_move)
@@ -39,9 +44,66 @@ class Move
       (scissors? && other_move.rock?)
   end
 
-  def to_s
-    value
+end
+
+class Rock < Move
+  
+  def >(other_move)
+    other_move.scissors? || other_move.lizard?
   end
+  
+  def <(other_move)
+    other_move.paper? || other_move.spock?
+  end
+    
+end
+
+class Scissors < Move
+  
+  def >(other_move)
+    other_move.paper? || other_move.lizard?
+  end
+  
+  def <(other_move)
+    other_move.rock? || other_move.spock?
+  end
+  
+end
+
+class Paper < Move
+  
+  def >(other_move)
+    other_move.rock? || other_move.spock?
+  end
+  
+  def <(other_move)
+    other_move.scissors? || other_move.lizard?
+  end
+  
+end
+
+class Spock < Move
+  
+  def >(other_move)
+    other_move.rock? || other_move.scissors?
+  end
+  
+  def <(other_move)
+    other_move.paper? || other_move.lizard?
+  end
+  
+end
+
+class Lizard < Move
+  
+  def >(other_move)
+    other_move.paper? || other_move.spock?
+  end
+  
+  def <(other_move)
+    other_move.rock? || other_move.scissors?
+  end
+  
 end
 
 class Player
