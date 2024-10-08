@@ -61,7 +61,6 @@ end
 
 class Paper < Move
 
-
   def initialize
     self.value = 'Paper'
   end
@@ -109,6 +108,7 @@ class Lizard < Move
 end
 
 class MoveOptions
+  
   CHOICES = {
     ['s', 'scissors'] => Scissors.new,
     ['r', 'rock'] => Rock.new,
@@ -179,11 +179,11 @@ class Human < Player
     choice = nil
 
     loop do
-      puts "Please choose Rock, Paper, or Scissors."
+      puts "Please choose Rock, Spock, Paper, Scissors, or Lizard."
       choice = get_choice(gets.chomp)
 
       break if MoveOptions.choices.include? choice
-      puts "Error: choose Rock, Paper, or Scissors."
+      puts "Error: choose Rock, Spock, Paper, Scissors, or Lizard."
     end
 
     self.move = choice
