@@ -108,7 +108,7 @@ class Lizard < Move
 end
 
 class MoveOptions
-  
+
   CHOICES = {
     ['s', 'scissors'] => Scissors.new,
     ['r', 'rock'] => Rock.new,
@@ -148,12 +148,16 @@ class Player
 end
 
 class Human < Player
+  def capitalize_longer_names(name)
+    name.split.map(&:capitalize).join(' ')
+  end
+
   def set_name
     name = ''
 
     loop do
       puts "What's your name?"
-      name = gets.chomp.capitalize
+      name = capitalize_longer_names(gets.chomp.strip)
 
       break unless name == ''
       puts "Enter your name!"
@@ -167,9 +171,10 @@ class Human < Player
 
   def get_choice(input)
     choices = MoveOptions::CHOICES
+    input = input.downcase.delete(' ')
 
     choices.each do |possible_inputs, choice|
-      return choice if possible_inputs.include?(input.downcase)
+      return choice if possible_inputs.include?(input)
     end
 
     ''
