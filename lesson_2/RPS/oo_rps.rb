@@ -1,15 +1,8 @@
 class Move
-  
-  CHOICES = {
-    ['s', 'scissors'] => Scissors.new,
-    ['r', 'rock'] => Rock.new,
-    ['p', 'paper'] => Paper.new,
-    ['sp', 'spock'] => Spock.new,
-    ['l', 'lizard'] => Lizard.new
-}
+  attr_accessor :value
 
-  def self.choices
-    CHOICES.values
+  def to_s
+    value
   end
 
   def scissors?
@@ -23,87 +16,111 @@ class Move
   def paper?
     self.class == Paper
   end
-  
+
   def spock?
     self.class == Spock
   end
-  
+
   def lizard?
     self.class == Lizard
-  end
-
-  def >(other_move)
-    (rock? && other_move.scissors?) ||
-      (paper? && other_move.rock?) ||
-      (scissors? && other_move.paper?)
-  end
-
-  def <(other_move)
-    (rock? && other_move.paper?) ||
-      (paper? && other_move.scissors?) ||
-      (scissors? && other_move.rock?)
   end
 
 end
 
 class Rock < Move
-  
+
+  def initialize
+    self.value = 'Rock'
+  end
+
   def >(other_move)
     other_move.scissors? || other_move.lizard?
   end
-  
+
   def <(other_move)
     other_move.paper? || other_move.spock?
   end
-    
+
 end
 
 class Scissors < Move
-  
+
+  def initialize
+    self.value = 'Scissors'
+  end
+
   def >(other_move)
     other_move.paper? || other_move.lizard?
   end
-  
+
   def <(other_move)
     other_move.rock? || other_move.spock?
   end
-  
+
 end
 
 class Paper < Move
-  
+
+
+  def initialize
+    self.value = 'Paper'
+  end
+
   def >(other_move)
     other_move.rock? || other_move.spock?
   end
-  
+
   def <(other_move)
     other_move.scissors? || other_move.lizard?
   end
-  
+
 end
 
 class Spock < Move
-  
+
+  def initialize
+    self.value = 'Spock'
+  end
+
   def >(other_move)
     other_move.rock? || other_move.scissors?
   end
-  
+
   def <(other_move)
     other_move.paper? || other_move.lizard?
   end
-  
+
 end
 
 class Lizard < Move
-  
+
+  def initialize
+    self.value = 'Lizard'
+  end
+
   def >(other_move)
     other_move.paper? || other_move.spock?
   end
-  
+
   def <(other_move)
     other_move.rock? || other_move.scissors?
   end
-  
+
+end
+
+class MoveOptions
+  CHOICES = {
+    ['s', 'scissors'] => Scissors.new,
+    ['r', 'rock'] => Rock.new,
+    ['p', 'paper'] => Paper.new,
+    ['sp', 'spock'] => Spock.new,
+    ['l', 'lizard'] => Lizard.new
+  }
+
+  def self.choices
+    CHOICES.values
+  end
+
 end
 
 class Player
@@ -148,11 +165,11 @@ class Human < Player
     self.name = name
   end
 
-  def convert(input)
-    choices = Move::CHOICES
+  def get_choice(input)
+    choices = MoveOptions::CHOICES
 
-    choices.each do |abbrev, choice|
-      return choice if input.downcase == abbrev || input.capitalize == choice
+    choices.each do |possible_inputs, choice|
+      return choice if possible_inputs.include?(input.downcase)
     end
 
     ''
@@ -163,13 +180,13 @@ class Human < Player
 
     loop do
       puts "Please choose Rock, Paper, or Scissors."
-      choice = convert(gets.chomp)
+      choice = get_choice(gets.chomp)
 
-      break if Move.choices.include? choice
+      break if MoveOptions.choices.include? choice
       puts "Error: choose Rock, Paper, or Scissors."
     end
 
-    self.move = Move.new(choice)
+    self.move = choice
   end
 end
 
@@ -179,8 +196,9 @@ class Computer < Player
   end
 
   def choose
-    self.move = Move.new(Move.choices.sample)
+    self.move = MoveOptions.choices.sample
   end
+
 end
 
 class Score
