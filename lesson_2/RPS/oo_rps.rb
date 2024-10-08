@@ -237,6 +237,35 @@ class Score
 
 end
 
+class History
+  attr_reader :move_records
+  
+  def initialize
+    @move_records = {
+      human: [],
+      computer: []
+    } 
+  end
+  
+  def add_moves(human_move, computer_move) 
+    move_records[:human] << human_move
+    move_records[:computer] << computer_move
+  end
+  
+  def display_human_moves
+    move_records[:human].join(',')
+  end
+  
+  def display_computer_moves
+    move_records[:computer].join(',')
+  end
+  
+  def to_s
+    "Your moves: #{display_human_moves} | Computer's moves: #{display_computer_moves}"
+  end
+  
+end
+
 class RPSgame
   attr_accessor :human, :computer
 
