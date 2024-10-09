@@ -242,6 +242,28 @@ class SmartBot < Computer
 
 end
 
+class Barbarian < Computer
+  def set_name
+    self.name = 'Wulfgar'
+  end
+
+  def choose
+    self.move = Rock.new
+  end
+end
+
+class Barbarian2 < Barbarian
+  def choose
+    self.move = [Rock.new, Scissors.new, Paper.new].sample
+  end
+end
+
+class BarbarianFinalStage < Barbarian2
+  def choose 
+    self.move = MoveOptions.choices.sample
+  end
+end
+
 class Score
   attr_accessor :points
 
@@ -310,7 +332,7 @@ class RPSgame
 
   def initialize
     @human = Human.new
-    @computer = SmartBot.new
+    @computer = Neanderthal.new
     @history = History.new(human, computer)
   end
 
@@ -399,7 +421,7 @@ class RPSgame
 
     loop do
       human.choose
-      computer.choose(history.move_records[:human])
+      computer.choose#(history.move_records[:human])
       display_moves
       display_winner
       human.display_score(computer)
