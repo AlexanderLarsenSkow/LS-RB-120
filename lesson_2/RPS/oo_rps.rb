@@ -25,6 +25,10 @@ class Move
     self.class == Lizard
   end
 
+  def gun?
+    self.class == Gun
+  end
+
 end
 
 class Rock < Move
@@ -38,7 +42,8 @@ class Rock < Move
   end
 
   def <(other_move)
-    other_move.paper? || other_move.spock?
+    other_move.paper? || other_move.spock? ||
+      other_move.gun?
   end
 
 end
@@ -54,7 +59,8 @@ class Scissors < Move
   end
 
   def <(other_move)
-    other_move.rock? || other_move.spock?
+    other_move.rock? || other_move.spock? ||
+      other_move.gun?
   end
 
 end
@@ -70,7 +76,8 @@ class Paper < Move
   end
 
   def <(other_move)
-    other_move.scissors? || other_move.lizard?
+    other_move.scissors? || other_move.lizard? ||
+      other_move.gun?
   end
 
 end
@@ -86,7 +93,8 @@ class Spock < Move
   end
 
   def <(other_move)
-    other_move.paper? || other_move.lizard?
+    other_move.paper? || other_move.lizard? ||
+      other_move.gun?
   end
 
 end
@@ -102,7 +110,25 @@ class Lizard < Move
   end
 
   def <(other_move)
-    other_move.rock? || other_move.scissors?
+    other_move.rock? || other_move.scissors? ||
+      other_move.gun?
+  end
+
+end
+
+class Gun < Move
+  def initialize
+    self.value = 'Gun'
+  end
+
+  def >(other_move)
+    other_move.rock? || other_move.scissors? ||
+      other_move.paper? || other_move.spock? ||
+      other_move.lizard?
+  end
+
+  def <(other_move)
+    false
   end
 
 end
@@ -259,8 +285,18 @@ class Barbarian2 < Barbarian
 end
 
 class BarbarianFinalStage < Barbarian2
-  def choose 
+  def choose
     self.move = MoveOptions.choices.sample
+  end
+end
+
+class JamesBond < Computer
+  def set_name
+    self.name = 'James Bond'
+  end
+
+  def choose
+    self.move = Gun.new
   end
 end
 
@@ -332,7 +368,7 @@ class RPSgame
 
   def initialize
     @human = Human.new
-    @computer = Neanderthal.new
+    @computer = JamesBond.new
     @history = History.new(human, computer)
   end
 
