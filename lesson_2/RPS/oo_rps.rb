@@ -197,11 +197,38 @@ end
 
 class Computer < Player
   def set_name
-    self.name = ['010101010-the-first', 'Rockinator2000', 'TheCruncher'].sample
+    self.name = ['SmartBot', 'The Rockinator', 'Star Trek Fan'].sample
   end
 
   def choose
     self.move = MoveOptions.choices.sample
+  end
+
+end
+
+class SmartBot < Computer
+  def set_name
+    self.name = 'SmartBot'
+  end
+
+  def find_most_common_move(human_move_history)
+    human_move_history.max_by { |move| human_move_history.count(move) }
+  end
+
+  def choose(human_move_history)
+    if human_move_history.size < 3
+      super()
+
+    else
+      common_move = find_most_common_move(human_move_history)
+      MoveOptions.choices.shuffle.each do |move|
+
+        if move > common_move
+          self.move = move
+          break
+        end
+      end
+    end
   end
 
 end
@@ -274,7 +301,7 @@ class RPSgame
 
   def initialize
     @human = Human.new
-    @computer = Computer.new
+    @computer = SmartBot.new
     @history = History.new(human, computer)
   end
 
@@ -363,7 +390,7 @@ class RPSgame
 
     loop do
       human.choose
-      computer.choose
+      computer.choose(history.move_records[:human])
       display_moves
       display_winner
       human.display_score(computer)
