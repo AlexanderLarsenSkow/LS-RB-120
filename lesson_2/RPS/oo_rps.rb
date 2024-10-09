@@ -211,23 +211,32 @@ class SmartBot < Computer
     self.name = 'SmartBot'
   end
 
-  def find_most_common_move(human_move_history)
-    human_move_history.max_by { |move| human_move_history.count(move) }
+  def human_pattern?(move_history)
+    move_history.any? { |move| move_history.count(move) > 1 }
+  end
+
+  def find_most_common_move(move_history)
+    move_history.max_by { |move| move_history.count(move) }
+  end
+
+  def beat_human(human_move)
+    MoveOptions.choices.shuffle.each do |move|
+      return move if move > human_move
+    end
   end
 
   def choose(human_move_history)
-    if human_move_history.size < 3
+    last_move = human_move_history[-1]
+    common_move = find_most_common_move(human_move_history)
+
+    if human_move_history.size < 2
       super()
 
-    else
-      common_move = find_most_common_move(human_move_history)
-      MoveOptions.choices.shuffle.each do |move|
+    elsif human_pattern?(human_move_history)
+      self.move = beat_human(common_move)
 
-        if move > common_move
-          self.move = move
-          break
-        end
-      end
+    else
+      self.move = beat_human(last_move)
     end
   end
 
