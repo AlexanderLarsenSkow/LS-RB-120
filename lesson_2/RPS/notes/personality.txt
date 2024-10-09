@@ -1,0 +1,36 @@
+Currently I have 3 Computer names.
+
+These should all be objects with their own names.
+They are subclasses for the Computer class.
+
+They all have their own move methods with different variations (sometimes they never choose others.)
+Rockinator2000 always picks rock, maybe. You cannot beat Rock.
+
+Lose message: Rockinator2000 bows his head in shame.
+
+You know what would be funny? Is if Rockinator learns from his defeat lmao. And he starts using more. That would be hillarious.
+
+Copycat would always choose your last move.
+
+in order to make Rockinator work, I need to add rounds. So 1 game is 1 round. And we play to 3 rounds.
+3 wins is 1 round win. 3 rounds won is grand winner.
+
+neanderthal man: learns as he goes
+  lose message: has been shaken to his core. He cries quietly in the corner.
+  win message: screams in victory. I guess Rock does always win.
+
+Spock looks at your most used move from your move history and plays one of the winners against that move.
+  lose message: Spock bows his head in acknowledgement. You have bested him.
+  win message: This outcome was inevitable. Spock flashes a little grin.
+
+  finds your most common move
+  looks through a shuffled group of moves and picks the first move that beats your most common move.
+
+  Spock Requirements:
+    Needs to have access to human move history
+    if the size of the move history array is greater than 2, he finds the most common move and plays a winner against that move.
+    if the size is 1, he picks a random tile.
+
+Angry
+He quits when he loses
+he gets worse at the game as he loses.
