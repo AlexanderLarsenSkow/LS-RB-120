@@ -281,6 +281,52 @@ class Barbarian < Computer
   def choose
     self.move = Rock.new
   end
+
+  def display_turn_win(letter)
+    if letter == :a
+      "#{self} roars in triumph! His rock is mighty."
+
+    elsif letter == :b
+      "#{self} flashes you a sly grin."
+
+    else
+      "#{self} pumps his fist in the air."
+    end
+  end
+
+  def display_turn_loss(letter)
+    if letter == :a
+      "#{self} eyes you in defiance."
+
+    elsif letter == :b
+      "You see sweat running down #{self}'s brow."
+
+    else
+      "#{self} makes a rude gesture at you. How incorrigible!"
+    end
+  end
+
+  def display_tie
+    "#{self} is ready for the next turn."
+  end
+
+  def display_turn_end(human)
+    win_displays = [display_turn_win(:a), display_turn_win(:b), display_turn_win(:c)]
+    loss_displays = [display_turn_loss(:a), display_turn_loss(:b), display_turn_loss(:c)]
+
+    if self.move > human.move
+      puts win_displays.sample
+
+    elsif self.move < human.move
+      puts loss_displays.sample
+
+    else
+      puts display_tie
+    end
+    sleep 1.4
+
+  end
+
 end
 
 class Barbarian2 < Barbarian
@@ -377,7 +423,7 @@ class RPSgame
 
   def initialize
     @human = Human.new
-    @computer = SmartBot.new
+    @computer = Barbarian.new
     @history = History.new(human, computer)
   end
 
@@ -485,9 +531,10 @@ class RPSgame
 
     loop do
       human.choose
-      computer.choose(history.move_records[:human])
+      computer.choose#(history.move_records[:human])
       display_moves
       display_winner
+      computer.display_turn_end(human)
       human.display_score(human.round_score, computer, computer.round_score)
 
       if round_over?
