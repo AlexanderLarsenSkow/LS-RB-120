@@ -150,10 +150,11 @@ class MoveOptions
 end
 
 class Player
-  attr_accessor :move, :name, :score
+  attr_accessor :move, :name, :score, :round_score
 
   def initialize
     set_name
+    @round_score = Score.new
     @score = Score.new
   end
 
@@ -161,10 +162,14 @@ class Player
     name
   end
 
-  def display_score(other_player)
+  def display_score(player_score, other_player, other_player_score)
     sleep 1.4
     system "clear"
-    puts "#{self}: #{score} | #{other_player}: #{other_player.score}"
+    puts "#{self}: #{player_score} | #{other_player}: #{other_player_score}"
+  end
+
+  def won_round?
+    round_score == Score::SCORE_TO_WIN
   end
 
   def won?
@@ -313,6 +318,10 @@ class Score
     self.points += 1
   end
 
+  def reset_points
+    self.points = 0
+  end
+
   def to_s
     points.to_s
   end
@@ -368,7 +377,7 @@ class RPSgame
 
   def initialize
     @human = Human.new
-    @computer = JamesBond.new
+    @computer = SmartBot.new
     @history = History.new(human, computer)
   end
 
@@ -396,11 +405,11 @@ class RPSgame
   def display_winner
     sleep 1
     if human.move > computer.move
-      human.score.gain_point
+      human.round_score.gain_point
       puts "You won!"
 
     elsif human.move < computer.move
-      computer.score.gain_point
+      computer.round_score.gain_point
       puts "#{computer.name} won!"
 
     else
@@ -437,8 +446,27 @@ class RPSgame
     choice.start_with?('Y')
   end
 
+  def round_over?
+    human.won_round? || computer.won_round?
+  end
+
   def game_over?
     human.won? || computer.won?
+  end
+
+  def new_round
+    if human.won_round?
+      puts "Nice! You won this round!"
+      human.score.gain_point
+      human.round_score.reset_points
+      computer.round_score.reset_points
+
+    else
+      puts "Oh no! The computer won this round!"
+      computer.score.gain_point
+      human.round_score.reset_points
+      computer.round_score.reset_points
+    end
   end
 
   def display_grand_winner
@@ -457,10 +485,15 @@ class RPSgame
 
     loop do
       human.choose
-      computer.choose#(history.move_records[:human])
+      computer.choose(history.move_records[:human])
       display_moves
       display_winner
-      human.display_score(computer)
+      human.display_score(human.round_score, computer, computer.round_score)
+
+      if round_over?
+        new_round
+        human.display_score(human.score, computer, computer.score)
+      end
 
       if game_over?
         display_grand_winner
