@@ -282,7 +282,7 @@ class Barbarian < Computer
     self.move = Rock.new
   end
 
-  def display_turn_win(letter)
+  def turn_win_displays(letter)
     if letter == :a
       "#{self} roars in triumph! His rock is mighty."
 
@@ -294,7 +294,7 @@ class Barbarian < Computer
     end
   end
 
-  def display_turn_loss(letter)
+  def turn_loss_displays(letter)
     if letter == :a
       "#{self} eyes you in defiance."
 
@@ -311,20 +311,37 @@ class Barbarian < Computer
   end
 
   def display_turn_end(human)
-    win_displays = [display_turn_win(:a), display_turn_win(:b), display_turn_win(:c)]
-    loss_displays = [display_turn_loss(:a), display_turn_loss(:b), display_turn_loss(:c)]
+    letter = [:a, :b, :c].sample
 
     if self.move > human.move
-      puts win_displays.sample
+      puts turn_win_displays(letter)
 
     elsif self.move < human.move
-      puts loss_displays.sample
+      puts turn_loss_displays(letter)
 
     else
       puts display_tie
     end
     sleep 1.4
 
+  end
+
+  def display_round_loss
+    "#{self} doesn't know how he lost. How could Rock lose? He is devestated."
+  end
+
+  def display_round_win
+    "#{self} raises his rock in the air. Nothing can beat Rock!"
+  end
+
+  def display_round_end
+    if self.won_round?
+      puts display_round_win
+
+    else
+      puts display_round_loss
+    end
+    sleep 3
   end
 
 end
@@ -437,6 +454,15 @@ class RPSgame
     puts "Thanks for playing!"
   end
 
+  def determine_computer
+    if computer.class == Barbarian && human.score == 1
+      self.computer = Barbarian2.new
+
+    elsif computer.class == Barbarian2 && human.score == 2
+      self.computer = BarbarianFinalStage.new
+    end
+  end
+
   def display_moves
     human_move = human.move
     computer_move = computer.move
@@ -531,6 +557,7 @@ class RPSgame
 
     loop do
       human.choose
+      determine_computer
       computer.choose#(history.move_records[:human])
       display_moves
       display_winner
@@ -538,6 +565,7 @@ class RPSgame
       human.display_score(human.round_score, computer, computer.round_score)
 
       if round_over?
+        computer.display_round_end
         new_round
         human.display_score(human.score, computer, computer.score)
       end
