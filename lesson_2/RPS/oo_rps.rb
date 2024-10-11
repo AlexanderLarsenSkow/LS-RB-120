@@ -282,6 +282,11 @@ class Barbarian < Computer
     self.move = Rock.new
   end
 
+  def speak
+    puts "My rock will destroy you, challenger. Prepare to meet earth!"
+    sleep 1.5
+  end
+
   def turn_win_displays(letter)
     if letter == :a
       "#{self} roars in triumph! His rock is mighty."
@@ -327,7 +332,7 @@ class Barbarian < Computer
   end
 
   def display_round_loss
-    "#{self} doesn't know how he lost. How could Rock lose? He is devestated."
+    "#{self} is speechless. Rock never loses."
   end
 
   def display_round_win
@@ -350,12 +355,30 @@ class Barbarian2 < Barbarian
   def choose
     self.move = [Rock.new, Scissors.new, Paper.new].sample
   end
+
+  def display_round_win
+    "#{self} drinks a gallon of mead to celebrate his victory!"
+  end
+
+  def display_round_loss
+    "#{self} is grits his teeth and locks eyes with you. Now comes the true test."
+  end
+
 end
 
 class BarbarianFinalStage < Barbarian2
   def choose
     self.move = MoveOptions.choices.sample
   end
+
+  def display_round_win
+    "#{self} bows before you. He has learned much this day."
+  end
+
+  def display_round_loss
+    "#{self} acknowledges you are the better warrior. Well done."
+  end
+
 end
 
 class JamesBond < Computer
@@ -556,6 +579,7 @@ class RPSgame
     display_welcome_message
 
     loop do
+      # computer.speak
       human.choose
       determine_computer
       computer.choose#(history.move_records[:human])
