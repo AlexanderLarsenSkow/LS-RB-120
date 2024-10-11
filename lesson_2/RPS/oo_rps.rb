@@ -304,7 +304,7 @@ class Barbarian < Computer
       "#{self} eyes you in defiance."
 
     elsif letter == :b
-      "You see sweat running down #{self}'s brow."
+      "You can see the sweat running down #{self}'s brow."
 
     else
       "#{self} makes a rude gesture at you. How incorrigible!"
@@ -312,7 +312,7 @@ class Barbarian < Computer
   end
 
   def display_tie
-    "#{self} is ready for the next turn."
+    "#{self} taps his foot impatiently."
   end
 
   def display_turn_end(human)
@@ -357,11 +357,11 @@ class Barbarian2 < Barbarian
   end
 
   def display_round_win
-    "#{self} drinks a gallon of mead to celebrate his victory!"
+    "#{self} sings a battle song about his greatness!"
   end
 
   def display_round_loss
-    "#{self} grits his teeth and locks eyes with you."
+    "#{self} breathes in deep. He is about to unlock his full power."
   end
 
 end
@@ -369,6 +369,10 @@ end
 class BarbarianFinalStage < Barbarian2
   def choose
     self.move = MoveOptions.choices.sample
+  end
+
+  def display_round_win
+    "#{self} drinks a gallon of mead to celebrate his victory!"
   end
 
   def display_round_loss
@@ -477,7 +481,7 @@ class RPSgame
     old_score = computer.score
 
     if computer.class == Barbarian && human.score == 1
-      self.computer = Barbarian2.new  
+      self.computer = Barbarian2.new
       computer.score = old_score
 
     elsif computer.class == Barbarian2 && human.score == 2
