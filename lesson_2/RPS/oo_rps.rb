@@ -283,13 +283,13 @@ class Barbarian < Computer
   end
 
   def speak
-    puts "My rock will destroy you, challenger. Prepare to meet earth!"
+    puts "My rock will destroy you, challenger. Prepare to meet your doom."
     sleep 1.5
   end
 
   def turn_win_displays(letter)
     if letter == :a
-      "#{self} roars in triumph! His rock is mighty."
+      "#{self} roars in triumph! #{move} is mighty."
 
     elsif letter == :b
       "#{self} flashes you a sly grin."
@@ -361,7 +361,7 @@ class Barbarian2 < Barbarian
   end
 
   def display_round_loss
-    "#{self} is grits his teeth and locks eyes with you. Now comes the true test."
+    "#{self} grits his teeth and locks eyes with you."
   end
 
 end
@@ -369,10 +369,6 @@ end
 class BarbarianFinalStage < Barbarian2
   def choose
     self.move = MoveOptions.choices.sample
-  end
-
-  def display_round_win
-    "#{self} bows before you. He has learned much this day."
   end
 
   def display_round_loss
@@ -477,12 +473,16 @@ class RPSgame
     puts "Thanks for playing!"
   end
 
-  def determine_computer
+  def evolve_barbarian
+    old_score = computer.score
+
     if computer.class == Barbarian && human.score == 1
-      self.computer = Barbarian2.new
+      self.computer = Barbarian2.new  
+      computer.score = old_score
 
     elsif computer.class == Barbarian2 && human.score == 2
       self.computer = BarbarianFinalStage.new
+      computer.score = old_score
     end
   end
 
@@ -581,7 +581,7 @@ class RPSgame
     loop do
       # computer.speak
       human.choose
-      determine_computer
+      evolve_barbarian
       computer.choose#(history.move_records[:human])
       display_moves
       display_winner
