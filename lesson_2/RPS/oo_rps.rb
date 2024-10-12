@@ -236,13 +236,11 @@ class Computer < Player
   end
 
   def display_turn_end(human)
-    letter = [:a, :b, :c].sample
-
     if self.move > human.move
-      puts turn_win_displays(letter)
+      puts random_turn_win_display
 
     elsif self.move < human.move
-      puts turn_loss_displays(letter)
+      puts random_turn_loss_display
 
     else
       puts display_tie
@@ -313,28 +311,20 @@ class Barbarian < Computer
     sleep 1.5
   end
 
-  def turn_win_displays(letter)
-    if letter == :a
-      "#{self} roars in triumph! #{move} is mighty."
+  def random_turn_win_display
+    reaction1 = "#{self} roars in triumph! #{move} is mighty."
+    reaction2 = "#{self} flashes you a sly grin."
+    reaction3 = "#{self} pumps his fist in the air."
 
-    elsif letter == :b
-      "#{self} flashes you a sly grin."
-
-    else
-      "#{self} pumps his fist in the air."
-    end
+    [reaction1, reaction2, reaction3].sample
   end
 
-  def turn_loss_displays(letter)
-    if letter == :a
-      "#{self} eyes you in defiance."
+  def random_turn_loss_display
+    reaction1 = "#{self} eyes you in defiance."
+    reaction2 = "You can see the sweat running down #{self}'s brow."
+    reaction3 = "#{self} makes a rude gesture at you. How incorrigible!"
 
-    elsif letter == :b
-      "You can see the sweat running down #{self}'s brow."
-
-    else
-      "#{self} makes a rude gesture at you. How incorrigible!"
-    end
+    [reaction1, reaction2, reaction3].sample
   end
 
   def display_tie
