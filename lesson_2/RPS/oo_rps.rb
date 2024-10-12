@@ -521,6 +521,14 @@ module GameDisplay
   def display_computer_won_round
     puts "Oh no! #{computer.name} won this round!"
   end
+  
+  def display_history_question
+    puts "Do you want to see the move history? Y / N"
+  end
+  
+  def display_play_again_question
+    puts "Do you want to play again? Y / N"
+  end
 
   def display_grand_winner
     system "clear"
@@ -531,6 +539,21 @@ module GameDisplay
       puts "Oh no! #{computer.name} took the day. There he is now dancing and laughing at you!"
     end
   end
+  
+module GameValidation
+  def yes_or_no_validation
+    choice = nil
+
+    loop do
+      choice = gets.chomp.upcase.strip
+
+      break if choice.start_with?('Y') || choice.start_with?('N')
+      puts "Error: Enter Y or N"
+    end
+    choice
+  end
+  
+end
 
 end
 
@@ -538,6 +561,7 @@ class RPSgame
   attr_accessor :human, :computer, :history
 
   include GameDisplay
+  include GameValidation
 
   def initialize
     display_welcome_message
@@ -583,43 +607,6 @@ class RPSgame
     human.display_score(human.round_score, computer, computer.round_score)
   end
 
-  def display_history
-    choice = nil
-
-    loop do
-      puts "Do you want to see the move history? Y / N?"
-      choice = gets.chomp.upcase.strip
-
-      break if choice.start_with?('Y') || choice.start_with?('N')
-      puts "Enter Y / N"
-    end
-
-    puts history if choice.start_with?('Y')
-  end
-
-  def play_again?
-    choice = ''
-
-    loop do
-      puts "Do you want to play again? Y / N"
-      choice = gets.chomp.upcase.strip
-
-      break if choice.start_with?('Y') || choice.start_with?('N')
-      puts "Error."
-    end
-
-    system "clear"
-    choice.start_with?('Y')
-  end
-
-  def round_over?
-    human.won_round? || computer.won_round?
-  end
-
-  def game_over?
-    human.won? || computer.won?
-  end
-
   def start_new_round
     computer.round_end_reaction
 
@@ -635,6 +622,30 @@ class RPSgame
     human.round_score.reset_points
     computer.round_score.reset_points
     human.display_score(human.score, computer, computer.score)
+  end
+  
+  def round_over?
+    human.won_round? || computer.won_round?
+  end
+
+  def game_over?
+    human.won? || computer.won?
+  end
+
+  def display_history
+    display_history_question
+    choice = yes_or_no_validation
+
+    system "clear"
+    puts history if choice.start_with?('Y')
+  end
+
+  def play_again?
+    display_play_again_question
+    choice = yes_or_no_validation
+
+    system "clear"
+    choice.start_with?('Y')
   end
 
   def play
