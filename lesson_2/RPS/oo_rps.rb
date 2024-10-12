@@ -149,19 +149,6 @@ class MoveOptions
 
 end
 
-# class ComputerOptions
-
-#   COMPUTERS = {
-#     ['w', 'wulfgar'] => 'Barbarian',
-#     ['b', 'brain', 'thebrain'] => 'SmartBot'
-#   }
-
-#   def self.choices
-#     Computers.values
-#   end
-
-# end
-
 module UserValidation
 
   def validate_choice(input, choices)
@@ -521,11 +508,11 @@ module GameDisplay
   def display_computer_won_round
     puts "Oh no! #{computer.name} won this round!"
   end
-  
+
   def display_history_question
     puts "Do you want to see the move history? Y / N"
   end
-  
+
   def display_play_again_question
     puts "Do you want to play again? Y / N"
   end
@@ -540,6 +527,8 @@ module GameDisplay
     end
   end
   
+end
+
 module GameValidation
   def yes_or_no_validation
     choice = nil
@@ -552,8 +541,6 @@ module GameValidation
     end
     choice
   end
-  
-end
 
 end
 
@@ -568,19 +555,6 @@ class RPSgame
     @human = Human.new
     @computer = human.pick_opponent
     @history = History.new(human, computer)
-  end
-
-  def evolve_barbarian
-    old_score = computer.score
-
-    if computer.class == Barbarian && human.score == 1
-      self.computer = Barbarian2.new
-      computer.score = old_score
-
-    elsif computer.class == Barbarian2 && human.score == 2
-      self.computer = BarbarianFinalStage.new
-      computer.score = old_score
-    end
   end
 
   def execute_moves
@@ -607,23 +581,41 @@ class RPSgame
     human.display_score(human.round_score, computer, computer.round_score)
   end
 
+  def evolve_barbarian
+    old_score = computer.score
+
+    if computer.class == Barbarian
+      self.computer = Barbarian2.new
+      computer.score = old_score
+
+    elsif computer.class == Barbarian2
+      self.computer = BarbarianFinalStage.new
+      computer.score = old_score
+    end
+  end
+
+  def reset_points
+    human.round_score.reset_points
+    computer.round_score.reset_points
+  end
+
   def start_new_round
     computer.round_end_reaction
 
     if human.won_round?
       display_human_won_round
       human.score.gain_point
+      evolve_barbarian
 
     else
       display_computer_won_round
       computer.score.gain_point
     end
 
-    human.round_score.reset_points
-    computer.round_score.reset_points
+    reset_points
     human.display_score(human.score, computer, computer.score)
   end
-  
+
   def round_over?
     human.won_round? || computer.won_round?
   end
@@ -651,7 +643,6 @@ class RPSgame
   def play
     loop do
       human.choose
-      evolve_barbarian
       computer.choose#(history.move_records[:human])
       execute_moves
       find_turn_winner
