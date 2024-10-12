@@ -447,16 +447,22 @@ class History
     move_records[:computer] << changing_comp.move
   end
 
-  def display_human_moves
-    move_records[:human].join(', ')
-  end
+  def get_moves(player)
+    moves_list = move_records[player]
 
-  def display_computer_moves
-    move_records[:computer].join(', ')
+    if moves_list.size > 7
+      moves_list[-7..-1].join(', ')
+
+    else
+      moves_list.join(', ')
+    end
   end
 
   def to_s
-    "#{human.name}'s moves: #{display_human_moves} | #{computer.name}'s moves: #{display_computer_moves}"
+    h_moves = get_moves(:human)
+    c_moves = get_moves(:computer)
+
+    "#{human}'s moves: #{h_moves} | #{computer}'s moves: #{c_moves}"
   end
 
 end
@@ -488,7 +494,7 @@ module GameDisplay
   def display_moves
     puts "You chose #{human.move}."
     sleep 1
-    puts "#{computer.name} chose #{computer.move}."
+    puts "#{computer} chose #{computer.move}."
   end
 
   def display_turn_win(player)
@@ -498,7 +504,7 @@ module GameDisplay
 
   def display_tie
     sleep 1
-    puts "You and #{computer.name} tied!"
+    puts "You and #{computer} tied!"
   end
 
   def display_human_won_round
@@ -506,7 +512,7 @@ module GameDisplay
   end
 
   def display_computer_won_round
-    puts "Oh no! #{computer.name} won this round!"
+    puts "Oh no! #{computer} won this round!"
   end
 
   def display_history_question
@@ -520,13 +526,13 @@ module GameDisplay
   def display_grand_winner
     system "clear"
     if human.won?
-      puts "Congratulations! You are the grand winner #{human.name}!"
+      puts "Congratulations! You are the grand winner #{human}!"
 
     else
-      puts "Oh no! #{computer.name} took the day. There he is now dancing and laughing at you!"
+      puts "Oh no! #{computer} took the day. There he is now dancing and laughing at you!"
     end
   end
-  
+
 end
 
 module GameValidation
