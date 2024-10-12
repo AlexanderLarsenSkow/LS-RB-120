@@ -268,7 +268,7 @@ class Computer < Player
     self.move = MoveOptions.choices.sample
   end
 
-  def display_turn_end(human)
+  def turn_end_reaction(human)
     if self.move > human.move
       puts random_turn_win_display
 
@@ -282,7 +282,7 @@ class Computer < Player
     sleep 1.4
   end
 
-  def display_round_end
+  def round_end_reaction
     if self.won_round?
       puts display_round_win
 
@@ -455,9 +455,9 @@ class History
     @computer = computer
   end
 
-  def add_moves
+  def add_moves(changing_comp)
     move_records[:human] << human.move
-    move_records[:computer] << computer.move
+    move_records[:computer] << changing_comp.move
   end
 
   def display_human_moves
@@ -514,6 +514,24 @@ module GameDisplay
     puts "You and #{computer.name} tied!"
   end
 
+  def display_human_won_round
+    puts "Nice! You won this round!"
+  end
+
+  def display_computer_won_round
+    puts "Oh no! #{computer.name} won this round!"
+  end
+
+  def display_grand_winner
+    system "clear"
+    if human.won?
+      puts "Congratulations! You are the grand winner #{human.name}!"
+
+    else
+      puts "Oh no! #{computer.name} took the day. There he is now dancing and laughing at you!"
+    end
+  end
+
 end
 
 class RPSgame
@@ -543,7 +561,7 @@ class RPSgame
 
   def execute_moves
     display_moves
-    history.add_moves
+    history.add_moves(computer)
   end
 
   def find_turn_winner
@@ -558,6 +576,11 @@ class RPSgame
     else
       display_tie
     end
+  end
+
+  def finish_turn
+    computer.turn_end_reaction(human)
+    human.display_score(human.round_score, computer, computer.round_score)
   end
 
   def display_history
@@ -597,48 +620,33 @@ class RPSgame
     human.won? || computer.won?
   end
 
-  def new_round
+  def start_new_round
+    computer.round_end_reaction
+
     if human.won_round?
-      puts "Nice! You won this round!"
+      display_human_won_round
       human.score.gain_point
-      human.round_score.reset_points
-      computer.round_score.reset_points
 
     else
-      puts "Oh no! The computer won this round!"
+      display_computer_won_round
       computer.score.gain_point
-      human.round_score.reset_points
-      computer.round_score.reset_points
     end
-  end
 
-  def display_grand_winner
-    system "clear"
-    if human.won?
-      puts "Congratulations! You are the grand winner #{human.name}!"
-
-    else
-      puts "Oh no! #{computer.name} took the day. There he is now dancing and laughing at you!"
-
-    end
+    human.round_score.reset_points
+    computer.round_score.reset_points
+    human.display_score(human.score, computer, computer.score)
   end
 
   def play
     loop do
-      # computer.speak
       human.choose
       evolve_barbarian
       computer.choose#(history.move_records[:human])
       execute_moves
       find_turn_winner
-      computer.display_turn_end(human)
-      human.display_score(human.round_score, computer, computer.round_score)
+      finish_turn
 
-      if round_over?
-        computer.display_round_end
-        new_round
-        human.display_score(human.score, computer, computer.score)
-      end
+      start_new_round if round_over?
 
       if game_over?
         display_grand_winner
@@ -651,6 +659,7 @@ class RPSgame
 
     display_goodbye_message
   end
+
 end
 
 RPSgame.new.play
