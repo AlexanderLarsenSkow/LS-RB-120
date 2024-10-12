@@ -149,6 +149,37 @@ class MoveOptions
 
 end
 
+# class ComputerOptions
+
+#   COMPUTERS = {
+#     ['w', 'wulfgar'] => 'Barbarian',
+#     ['b', 'brain', 'thebrain'] => 'SmartBot'
+#   }
+
+#   def self.choices
+#     Computers.values
+#   end
+
+# end
+
+module UserValidation
+
+  def validate_choice(input, choices)
+    input = input.downcase.delete(' ')
+
+    choices.each do |possible_inputs, choice|
+      return choice if possible_inputs.include?(input)
+    end
+
+    ''
+  end
+
+  def capitalize_longer_names(name)
+    name.strip.split.map(&:capitalize).join(' ')
+  end
+
+end
+
 class Player
   attr_accessor :move, :name, :score, :round_score
 
@@ -179,16 +210,14 @@ class Player
 end
 
 class Human < Player
-  def capitalize_longer_names(name)
-    name.split.map(&:capitalize).join(' ')
-  end
+  include UserValidation
 
   def set_name
     name = ''
 
     loop do
       puts "What's your name?"
-      name = capitalize_longer_names(gets.chomp.strip)
+      name = capitalize_longer_names(gets.chomp)
 
       break unless name == ''
       puts "Enter your name!"
@@ -200,28 +229,17 @@ class Human < Player
     self.name = name
   end
 
-  def get_choice(input)
-    choices = MoveOptions::CHOICES
-    input = input.downcase.delete(' ')
-
-    choices.each do |possible_inputs, choice|
-      return choice if possible_inputs.include?(input)
-    end
-
-    ''
-  end
-  
   def pick_opponent
     choice = nil
-    
-    loop do 
+
+    loop do
       puts "Choose your enemy: Wulfgar, or TheBrain."
-      choice = gets.chomp.upcase.delete(' ')
-      
-      break if choice.start_with?('W') || choice.start_with?('B')
+      choice = validate_choice(gets.chomp, ComputerOptions::COMPUTERS)
+
+      break if ComputerOptions.choices.include? choice
       puts "Error: Pick one of these two."
     end
-    
+
     choice
   end
 
@@ -230,7 +248,7 @@ class Human < Player
 
     loop do
       puts "Please choose Rock, Spock, Paper, Scissors, or Lizard."
-      choice = get_choice(gets.chomp)
+      choice = validate_choice(gets.chomp, MoveOptions::CHOICES)
 
       break if MoveOptions.choices.include? choice
       puts "Error: choose Rock, Spock, Paper, Scissors, or Lizard."
@@ -238,6 +256,7 @@ class Human < Player
 
     self.move = choice
   end
+
 end
 
 class Computer < Player
@@ -393,6 +412,7 @@ class JamesBond < Computer
   def choose
     self.move = Gun.new
   end
+
 end
 
 class Score
@@ -454,12 +474,25 @@ class History
 
 end
 
+class ComputerOptions
+
+  COMPUTERS = {
+    ['w', 'wulfgar'] => Barbarian.new,
+    ['b', 'brain', 'thebrain'] => SmartBot.new
+  }
+
+  def self.choices
+    COMPUTERS.values
+  end
+
+end
+
 class RPSgame
   attr_accessor :human, :computer, :history
 
   def initialize
     @human = Human.new
-    @computer = Barbarian.new
+    @computer = human.pick_opponent
     @history = History.new(human, computer)
   end
 
@@ -577,7 +610,7 @@ class RPSgame
 
   def play
     display_welcome_message
-
+    # human.pick_opponent
     loop do
       # computer.speak
       human.choose
