@@ -210,6 +210,20 @@ class Human < Player
 
     ''
   end
+  
+  def pick_opponent
+    choice = nil
+    
+    loop do 
+      puts "Choose your enemy: Wulfgar, or TheBrain."
+      choice = gets.chomp.upcase.delete(' ')
+      
+      break if choice.start_with?('W') || choice.start_with?('B')
+      puts "Error: Pick one of these two."
+    end
+    
+    choice
+  end
 
   def choose
     choice = nil
@@ -263,7 +277,7 @@ end
 
 class SmartBot < Computer
   def set_name
-    self.name = 'SmartBot'
+    self.name = 'TheBrain'
   end
 
   def human_pattern?(move_history)
