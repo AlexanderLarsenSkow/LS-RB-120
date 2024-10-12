@@ -235,6 +235,32 @@ class Computer < Player
     self.move = MoveOptions.choices.sample
   end
 
+  def display_turn_end(human)
+    letter = [:a, :b, :c].sample
+
+    if self.move > human.move
+      puts turn_win_displays(letter)
+
+    elsif self.move < human.move
+      puts turn_loss_displays(letter)
+
+    else
+      puts display_tie
+    end
+
+    sleep 1.4
+  end
+
+  def display_round_end
+    if self.won_round?
+      puts display_round_win
+
+    else
+      puts display_round_loss
+    end
+    sleep 3
+  end
+
 end
 
 class SmartBot < Computer
@@ -315,38 +341,12 @@ class Barbarian < Computer
     "#{self} taps his foot impatiently."
   end
 
-  def display_turn_end(human)
-    letter = [:a, :b, :c].sample
-
-    if self.move > human.move
-      puts turn_win_displays(letter)
-
-    elsif self.move < human.move
-      puts turn_loss_displays(letter)
-
-    else
-      puts display_tie
-    end
-    sleep 1.4
-
-  end
-
   def display_round_loss
     "#{self} is speechless. Rock never loses."
   end
 
   def display_round_win
     "#{self} raises his rock in the air. Nothing can beat Rock!"
-  end
-
-  def display_round_end
-    if self.won_round?
-      puts display_round_win
-
-    else
-      puts display_round_loss
-    end
-    sleep 3
   end
 
 end
@@ -414,14 +414,6 @@ class Score
 
   def ==(other_score)
     points == other_score
-  end
-
-  def >(other_score)
-    points > other_score.points
-  end
-
-  def <(other_score)
-    points < other_score.points
   end
 
 end
