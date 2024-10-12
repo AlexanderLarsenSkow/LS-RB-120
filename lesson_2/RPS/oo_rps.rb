@@ -455,9 +455,9 @@ class History
     @computer = computer
   end
 
-  def add_moves(human_move, computer_move)
-    move_records[:human] << human_move
-    move_records[:computer] << computer_move
+  def add_moves
+    move_records[:human] << human.move
+    move_records[:computer] << computer.move
   end
 
   def display_human_moves
@@ -478,7 +478,7 @@ class ComputerOptions
 
   COMPUTERS = {
     ['w', 'wulfgar'] => Barbarian.new,
-    ['b', 'brain', 'thebrain'] => SmartBot.new
+    ['b', 'brain', 't', 'thebrain'] => SmartBot.new
   }
 
   def self.choices
@@ -487,23 +487,45 @@ class ComputerOptions
 
 end
 
-class RPSgame
-  attr_accessor :human, :computer, :history
-
-  def initialize
-    @human = Human.new
-    @computer = human.pick_opponent
-    @history = History.new(human, computer)
-  end
-
+module GameDisplay
   def display_welcome_message
-    puts "Welcome to Rock, Paper, Scissors!"
+    puts "Welcome to Rock Spock, Paper, Scissors, Lizard!"
     sleep 2
     system "clear"
   end
 
   def display_goodbye_message
     puts "Thanks for playing!"
+  end
+
+  def display_moves
+    puts "You chose #{human.move}."
+    sleep 1
+    puts "#{computer.name} chose #{computer.move}."
+  end
+
+  def display_turn_win(player)
+    sleep 1
+    puts "#{player} won!"
+  end
+
+  def display_tie
+    sleep 1
+    puts "You and #{computer.name} tied!"
+  end
+
+end
+
+class RPSgame
+  attr_accessor :human, :computer, :history
+
+  include GameDisplay
+
+  def initialize
+    display_welcome_message
+    @human = Human.new
+    @computer = human.pick_opponent
+    @history = History.new(human, computer)
   end
 
   def evolve_barbarian
@@ -519,29 +541,22 @@ class RPSgame
     end
   end
 
-  def display_moves
-    human_move = human.move
-    computer_move = computer.move
-
-    puts "You chose #{human_move}."
-    sleep 1
-    puts "#{computer.name} chose #{computer_move}."
-
-    history.add_moves(human_move, computer_move)
+  def execute_moves
+    display_moves
+    history.add_moves
   end
 
-  def display_winner
-    sleep 1
+  def find_turn_winner
     if human.move > computer.move
       human.round_score.gain_point
-      puts "You won!"
+      display_turn_win('You')
 
-    elsif human.move < computer.move
+    elsif computer.move > human.move
       computer.round_score.gain_point
-      puts "#{computer.name} won!"
+      display_turn_win(computer)
 
     else
-      puts "You and #{computer.name} tied!"
+      display_tie
     end
   end
 
@@ -609,15 +624,13 @@ class RPSgame
   end
 
   def play
-    display_welcome_message
-    # human.pick_opponent
     loop do
       # computer.speak
       human.choose
       evolve_barbarian
       computer.choose#(history.move_records[:human])
-      display_moves
-      display_winner
+      execute_moves
+      find_turn_winner
       computer.display_turn_end(human)
       human.display_score(human.round_score, computer, computer.round_score)
 
