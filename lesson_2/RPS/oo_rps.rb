@@ -582,7 +582,11 @@ module GameDisplay
   end
 
   def display_rules_question
-    puts "Do you understand? Enter Y."
+    puts "Do you want to see the rules?"
+  end
+
+  def display_ready_or_not
+    puts "Alright! Ready to play?"
   end
 
   def display_history_question
@@ -606,14 +610,22 @@ module GameDisplay
 end
 
 module GameValidation
-  def yes_or_no_validation
+  def yes_or_no_validation(number_of_options)
     choice = nil
 
     loop do
       choice = gets.chomp.upcase.strip
 
-      break if choice.start_with?('Y') || choice.start_with?('N')
-      puts "Error: Enter Y or N"
+      if number_of_options == 1
+        break if choice.start_with?('Y')
+          puts "Enter Y if you're ready!"
+
+
+      else
+        break if choice.start_with?('Y') || choice.start_with?('N')
+        puts "Error: Enter Y or N"
+
+      end
     end
     choice
   end
@@ -629,17 +641,24 @@ class RPSgame
   def initialize
     display_welcome_message
     @human = Human.new
-    display_rules
+    display_rules if see_rules?
 
-    @computer = human.pick_opponent if understand_rules?
+    @computer = human.pick_opponent if ready_to_play?
     @history = History.new(human, computer)
   end
 
-  def understand_rules?
+  def see_rules?
     display_rules_question
-    choice = yes_or_no_validation
+    choice = yes_or_no_validation(2)
 
-    choice.start_with?('Y') || choice.start_with?('N')
+    choice.start_with?('Y')
+  end
+
+  def ready_to_play?
+    display_ready_or_not
+    choice = yes_or_no_validation(1)
+
+    choice.start_with?('Y')
   end
 
   def computer_choice
@@ -671,7 +690,7 @@ class RPSgame
       display_turn_win('You')
 
     elsif computer.move > human.move
-      add_score(computer, :round)
+      add_point(computer, :round)
       display_turn_win(computer)
 
     else
@@ -728,7 +747,7 @@ class RPSgame
 
   def display_history
     display_history_question
-    choice = yes_or_no_validation
+    choice = yes_or_no_validation(2)
 
     system "clear"
     puts history if choice.start_with?('Y')
@@ -736,7 +755,7 @@ class RPSgame
 
   def play_again?
     display_play_again_question
-    choice = yes_or_no_validation
+    choice = yes_or_no_validation(2)
 
     system "clear"
     choice.start_with?('Y')
@@ -763,7 +782,7 @@ class RPSgame
       display_history
       break unless play_again?
     end
-    
+
     display_goodbye_message
   end
 
