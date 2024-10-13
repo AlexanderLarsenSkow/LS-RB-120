@@ -294,8 +294,8 @@ module SmartBotDisplay
 
   def random_turn_loss_display
     reaction1 = "ooooooooooooooo."
-    reaction2 = "#{self} looks at you in indignation."
-    reaction3 = "#{self} can't stand losing."
+    reaction2 = "#{self} boops in anger."
+    reaction3 = "#{self} looks like he's about to self-destruct."
 
     [reaction1, reaction2, reaction3].sample
   end
@@ -326,6 +326,7 @@ class SmartBot < Computer
   end
 
   def find_most_common_move(move_history)
+    move_history = move_history[-7..-1] if move_history.size > 7
     move_history.max_by { |move| move_history.count(move) }
   end
 
