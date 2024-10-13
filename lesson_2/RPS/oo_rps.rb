@@ -281,9 +281,42 @@ class Computer < Player
 
 end
 
+module SmartBotDisplay
+  def random_turn_win_display
+    reaction1 = "Beepboop boopbeep!"
+    reaction2 = "#{self} boops in self-satisfaction."
+    reaction3 = "#{self} does a small victory spin."
+
+    [reaction1, reaction2, reaction3].sample
+  end
+
+  def random_turn_loss_display
+    reaction1 = "ooooooooooooooo."
+    reaction2 = "#{self} looks at you in indignation."
+    reaction3 = "#{self} can't stand losing."
+
+    [reaction1, reaction2, reaction3].sample
+  end
+
+  def display_tie
+    "#{self} boops in anticipation."
+  end
+
+  def display_round_win
+    "#{self} starts playing the theme song to Space Jam."
+  end
+
+  def display_round_loss
+    "#{self} wonders where he went wrong."
+  end
+
+end
+
 class SmartBot < Computer
+  include SmartBotDisplay
+
   def set_name
-    self.name = 'TheBrain'
+    self.name = 'SmartBot'
   end
 
   def human_pattern?(move_history)
@@ -471,7 +504,7 @@ class ComputerOptions
 
   COMPUTERS = {
     ['w', 'wulfgar'] => Barbarian.new,
-    ['b', 'brain', 't', 'thebrain'] => SmartBot.new
+    ['s', 'smartbot'] => SmartBot.new
   }
 
   def self.choices
