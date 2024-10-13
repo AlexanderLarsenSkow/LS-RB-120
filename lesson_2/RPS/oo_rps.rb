@@ -277,6 +277,10 @@ class Computer < Player
     sleep 3
   end
 
+  def introduce
+    sleep 4
+  end
+
 end
 
 module SmartBotDisplay
@@ -306,6 +310,11 @@ module SmartBotDisplay
 
   def display_round_loss
     "#{self} wonders where he went wrong."
+  end
+
+  def introduce
+    puts "A cute robot rolls up to greet you. BEEPBOOP-you're-going-down."
+    super
   end
 
 end
@@ -376,6 +385,13 @@ module BarbarianDisplay
 
   def display_round_win
     "#{self} raises his rock in the air. Nothing can beat Rock!"
+  end
+
+  def introduce
+    puts "A giant man with scraggly brown hair and a massive rock approaches."
+    sleep 2
+    puts "'May the Rock Gods grant me victory!'"
+    super
   end
 
 end
@@ -661,6 +677,7 @@ class RPSgame
 
     @computer = human.pick_opponent if ready_to_play?
     @history = History.new(human, computer)
+    computer.introduce
   end
 
   def see_rules?
