@@ -217,10 +217,11 @@ class Human < Player
   end
 
   def pick_opponent
+    system "clear"
     choice = nil
 
     loop do
-      puts "Choose your enemy: Wulfgar, or TheBrain."
+      puts "Choose your enemy: Wulfgar or SmartBot."
       choice = validate_choice(gets.chomp, ComputerOptions::COMPUTERS)
 
       break if ComputerOptions.choices.include? choice
@@ -231,6 +232,7 @@ class Human < Player
   end
 
   def choose
+    system "clear"
     choice = nil
 
     loop do
@@ -524,6 +526,28 @@ module GameDisplay
     puts "Thanks for playing!"
   end
 
+  def display_rules
+    sleep 2
+    system "clear"
+
+    puts "                          These are the Rules:"
+    puts ""
+    sleep 1.7
+
+    puts"   Rock beats Scissors and Lizard.     Paper beats Rock and Spock."
+    puts ""
+    sleep 1.7
+
+    puts"   Scissors beats Paper and Lizard.    Lizard beats Spock and Paper."
+
+    puts ""
+    sleep 1.7
+    puts "                       Spock beats Rock and Lizard.              "
+    puts ""
+
+    sleep 1.7
+  end
+
   def display_moves
     puts "You chose #{human.move}."
     sleep 1
@@ -546,6 +570,10 @@ module GameDisplay
 
   def display_computer_won_round
     puts "Oh no! #{computer} won this round!"
+  end
+
+  def display_rules_question
+    puts "Do you understand? Enter Y."
   end
 
   def display_history_question
@@ -592,8 +620,17 @@ class RPSgame
   def initialize
     display_welcome_message
     @human = Human.new
-    @computer = human.pick_opponent
+    display_rules
+
+    @computer = human.pick_opponent if understand_rules?
     @history = History.new(human, computer)
+  end
+
+  def understand_rules?
+    display_rules_question
+    choice = yes_or_no_validation
+
+    choice.start_with?('Y') || choice.start_with?('N')
   end
 
   def computer_choice
