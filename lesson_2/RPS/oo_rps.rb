@@ -353,20 +353,7 @@ class SmartBot < Computer
 
 end
 
-class Barbarian < Computer
-  def set_name
-    self.name = 'Wulfgar'
-  end
-
-  def choose
-    self.move = Rock.new
-  end
-
-  def speak
-    puts "My rock will destroy you, challenger. Prepare to meet your doom."
-    sleep 1.5
-  end
-
+module BarbarianDisplay
   def random_turn_win_display
     reaction1 = "#{self} roars in triumph! #{move} is mighty."
     reaction2 = "#{self} flashes you a sly grin."
@@ -397,10 +384,20 @@ class Barbarian < Computer
 
 end
 
-class Barbarian2 < Barbarian
-  def choose
-    self.move = [Rock.new, Scissors.new, Paper.new].sample
+class Barbarian < Computer
+  include BarbarianDisplay
+
+  def set_name
+    self.name = 'Wulfgar'
   end
+
+  def choose
+    self.move = Rock.new
+  end
+
+end
+
+module Barbarian2Display
 
   def display_round_win
     "#{self} sings a battle song about his greatness!"
@@ -412,10 +409,16 @@ class Barbarian2 < Barbarian
 
 end
 
-class BarbarianFinalStage < Barbarian2
+class Barbarian2 < Barbarian
+  include Barbarian2Display
+
   def choose
-    self.move = MoveOptions.choices.sample
+    self.move = [Rock.new, Scissors.new, Paper.new].sample
   end
+
+end
+
+module FinalBarbarianDisplay
 
   def display_round_win
     "#{self} drinks a gallon of mead to celebrate his victory!"
@@ -423,6 +426,15 @@ class BarbarianFinalStage < Barbarian2
 
   def display_round_loss
     "#{self} acknowledges you are the better warrior. Well done."
+  end
+
+end
+
+class FinalBarbarian < Barbarian2
+  include FinalBarbarianDisplay
+
+  def choose
+    self.move = MoveOptions.choices.sample
   end
 
 end
@@ -675,7 +687,7 @@ class RPSgame
       computer.score = old_score
 
     elsif computer.class == Barbarian2
-      self.computer = BarbarianFinalStage.new
+      self.computer = FinalBarbarian.new
       computer.score = old_score
     end
   end
