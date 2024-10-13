@@ -596,6 +596,15 @@ class RPSgame
     @history = History.new(human, computer)
   end
 
+  def computer_choice
+    if computer.class == SmartBot
+      computer.choose(history.move_records[:human])
+
+    else
+      computer.choose
+    end
+  end
+
   def execute_moves
     display_moves
     history.add_moves(computer)
@@ -682,7 +691,7 @@ class RPSgame
   def play
     loop do
       human.choose
-      computer.choose#(history.move_records[:human])
+      computer_choice
       execute_moves
       find_turn_winner
       finish_turn
