@@ -536,10 +536,21 @@ module GameDisplay
   end
 
   def display_rules
-    sleep 2
     system "clear"
+    puts <<~RULES
+      The game is simple! It's just like Rock, Paper, Scissors with some
+      extra moves. In this version, you can choose what computer you will
+      play against. Be warned, they all have their own personalities and will
+      act in different ways. Some will be unfair. Others will learn over time.
+      Figuring out their move set is part of the game!
+    RULES
+    puts ""
+  end
 
-    puts "                          These are the Rules:"
+  def display_moves_rules
+    sleep 8
+
+    puts "                          These are the Moves:"
     puts ""
     sleep 1.7
 
@@ -555,6 +566,11 @@ module GameDisplay
     puts ""
 
     sleep 1.7
+  end
+
+  def explain_game
+    display_rules
+    display_moves_rules
   end
 
   def display_moves
@@ -641,7 +657,7 @@ class RPSgame
   def initialize
     display_welcome_message
     @human = Human.new
-    display_rules if see_rules?
+    explain_game if see_rules?
 
     @computer = human.pick_opponent if ready_to_play?
     @history = History.new(human, computer)
