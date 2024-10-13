@@ -249,10 +249,6 @@ class Human < Player
 end
 
 class Computer < Player
-  def set_name
-    self.name = ['SmartBot', 'The Rockinator', 'Star Trek Fan'].sample
-  end
-
   def choose
     self.move = MoveOptions.choices.sample
   end
@@ -660,13 +656,22 @@ class RPSgame
     history.add_moves(computer)
   end
 
+  def add_point(player, type)
+    if type == :round
+      player.round_score.gain_point
+
+    else
+      player.score.gain_point
+    end
+  end
+
   def find_turn_winner
     if human.move > computer.move
-      human.round_score.gain_point
+      add_point(human, :round)
       display_turn_win('You')
 
     elsif computer.move > human.move
-      computer.round_score.gain_point
+      add_score(computer, :round)
       display_turn_win(computer)
 
     else
@@ -698,16 +703,15 @@ class RPSgame
   end
 
   def start_new_round
-    computer.round_end_reaction
 
     if human.won_round?
       display_human_won_round
-      human.score.gain_point
+      add_point(human, :main)
       evolve_barbarian
 
     else
       display_computer_won_round
-      computer.score.gain_point
+      add_point(computer, :main)
     end
 
     reset_points
@@ -746,7 +750,10 @@ class RPSgame
       find_turn_winner
       finish_turn
 
-      start_new_round if round_over?
+      if round_over?
+        computer.round_end_reaction
+        start_new_round
+      end
 
       if game_over?
         display_grand_winner
@@ -756,7 +763,7 @@ class RPSgame
       display_history
       break unless play_again?
     end
-
+    
     display_goodbye_message
   end
 
