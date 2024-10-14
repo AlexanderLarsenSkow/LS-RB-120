@@ -6,34 +6,29 @@ class Move
   end
 
   def scissors?
-    self.class == Scissors
+    instance_of?(Scissors)
   end
 
   def rock?
-    self.class == Rock
+    instance_of?(Rock)
   end
 
   def paper?
-    self.class == Paper
+    instance_of?(Paper)
   end
 
   def spock?
-    self.class == Spock
+    instance_of?(Spock)
   end
 
   def lizard?
-    self.class == Lizard
+    instance_of?(Lizard)
   end
-
-  def gun?
-    self.class == Gun
-  end
-
 end
 
 class Rock < Move
-
   def initialize
+    super
     self.value = 'Rock'
   end
 
@@ -44,12 +39,11 @@ class Rock < Move
   def <(other_move)
     other_move.paper? || other_move.spock?
   end
-
 end
 
 class Scissors < Move
-
   def initialize
+    super
     self.value = 'Scissors'
   end
 
@@ -60,12 +54,11 @@ class Scissors < Move
   def <(other_move)
     other_move.rock? || other_move.spock?
   end
-
 end
 
 class Paper < Move
-
   def initialize
+    super
     self.value = 'Paper'
   end
 
@@ -76,12 +69,11 @@ class Paper < Move
   def <(other_move)
     other_move.scissors? || other_move.lizard?
   end
-
 end
 
 class Spock < Move
-
   def initialize
+    super
     self.value = 'Spock'
   end
 
@@ -92,12 +84,11 @@ class Spock < Move
   def <(other_move)
     other_move.paper? || other_move.lizard?
   end
-
 end
 
 class Lizard < Move
-
   def initialize
+    super
     self.value = 'Lizard'
   end
 
@@ -108,11 +99,9 @@ class Lizard < Move
   def <(other_move)
     other_move.rock? || other_move.scissors?
   end
-
 end
 
 class MoveOptions
-
   CHOICES = {
     ['s', 'scissors'] => Scissors.new,
     ['r', 'rock'] => Rock.new,
@@ -124,11 +113,9 @@ class MoveOptions
   def self.choices
     CHOICES.values
   end
-
 end
 
 module UserValidation
-
   def validate_choice(input, choices)
     input = input.downcase.delete(' ')
 
@@ -142,7 +129,6 @@ module UserValidation
   def capitalize_longer_names(name)
     name.strip.split.map(&:capitalize).join(' ')
   end
-
 end
 
 class Player
@@ -171,7 +157,6 @@ class Player
   def won?
     score == Score::SCORE_TO_WIN
   end
-
 end
 
 class Human < Player
@@ -223,7 +208,6 @@ class Human < Player
 
     self.move = choice
   end
-
 end
 
 class Computer < Player
@@ -232,10 +216,10 @@ class Computer < Player
   end
 
   def turn_end_reaction(human)
-    if self.move > human.move
+    if move > human.move
       puts random_turn_win_display
 
-    elsif self.move < human.move
+    elsif move < human.move
       puts random_turn_loss_display
 
     else
@@ -246,7 +230,7 @@ class Computer < Player
   end
 
   def round_end_reaction
-    if self.won_round?
+    if won_round?
       puts display_round_win
 
     else
@@ -258,7 +242,6 @@ class Computer < Player
   def introduce
     sleep 4
   end
-
 end
 
 module SmartBotDisplay
@@ -294,7 +277,6 @@ module SmartBotDisplay
     puts "A cute robot rolls up to greet you. BEEPBOOP-you're-going-down."
     super
   end
-
 end
 
 class SmartBot < Computer
@@ -333,7 +315,6 @@ class SmartBot < Computer
       self.move = beat_human(last_move)
     end
   end
-
 end
 
 module BarbarianDisplay
@@ -371,7 +352,6 @@ module BarbarianDisplay
     puts "'May the Rock Gods grant me victory!'"
     super
   end
-
 end
 
 class Barbarian < Computer
@@ -384,11 +364,9 @@ class Barbarian < Computer
   def choose
     self.move = Rock.new
   end
-
 end
 
 module Barbarian2Display
-
   def display_round_win
     "#{self} sings a battle song about his greatness!"
   end
@@ -396,7 +374,6 @@ module Barbarian2Display
   def display_round_loss
     "#{self} breathes in deep. He is about to unlock his full power."
   end
-
 end
 
 class Barbarian2 < Barbarian
@@ -405,11 +382,9 @@ class Barbarian2 < Barbarian
   def choose
     self.move = [Rock.new, Scissors.new, Paper.new].sample
   end
-
 end
 
 module FinalBarbarianDisplay
-
   def display_round_win
     "#{self} drinks a gallon of mead to celebrate his victory!"
   end
@@ -417,7 +392,6 @@ module FinalBarbarianDisplay
   def display_round_loss
     "#{self} acknowledges you are the better warrior. Well done."
   end
-
 end
 
 class FinalBarbarian < Barbarian2
@@ -426,7 +400,6 @@ class FinalBarbarian < Barbarian2
   def choose
     self.move = MoveOptions.choices.sample
   end
-
 end
 
 class Score
@@ -453,7 +426,6 @@ class Score
   def ==(other_score)
     points == other_score
   end
-
 end
 
 class History
@@ -491,11 +463,9 @@ class History
 
     "#{human}'s moves: #{h_moves} | #{computer}'s moves: #{c_moves}"
   end
-
 end
 
 class ComputerOptions
-
   COMPUTERS = {
     ['w', 'wulfgar'] => Barbarian.new,
     ['s', 'smartbot'] => SmartBot.new
@@ -504,7 +474,6 @@ class ComputerOptions
   def self.choices
     COMPUTERS.values
   end
-
 end
 
 module GameDisplay
@@ -537,11 +506,11 @@ module GameDisplay
     puts ""
     sleep 1.7
 
-    puts"   Rock beats Scissors and Lizard.     Paper beats Rock and Spock."
+    puts "   Rock beats Scissors and Lizard.     Paper beats Rock and Spock."
     puts ""
     sleep 1.7
 
-    puts"   Scissors beats Paper and Lizard.    Lizard beats Spock and Paper."
+    puts "   Scissors beats Paper and Lizard.    Lizard beats Spock and Paper."
 
     puts ""
     sleep 1.7
@@ -605,7 +574,6 @@ module GameDisplay
       puts "Oh no! #{computer} won the game! There he is now celebrating!"
     end
   end
-
 end
 
 module GameValidation
@@ -617,8 +585,7 @@ module GameValidation
 
       if number_of_options == 1
         break if choice.start_with?('Y')
-          puts "Enter Y if you're ready!"
-
+        puts "Enter Y if you're ready!"
 
       else
         break if choice.start_with?('Y') || choice.start_with?('N')
@@ -628,7 +595,6 @@ module GameValidation
     end
     choice
   end
-
 end
 
 class RPSgame
@@ -662,7 +628,7 @@ class RPSgame
   end
 
   def computer_choice
-    if computer.class == SmartBot
+    if computer.instance_of?(SmartBot)
       computer.choose(history.move_records[:human])
 
     else
@@ -706,11 +672,11 @@ class RPSgame
   def evolve_barbarian
     old_score = computer.score
 
-    if computer.class == Barbarian
+    if computer.instance_of?(Barbarian)
       self.computer = Barbarian2.new
       computer.score = old_score
 
-    elsif computer.class == Barbarian2
+    elsif computer.instance_of?(Barbarian2)
       self.computer = FinalBarbarian.new
       computer.score = old_score
     end
@@ -722,7 +688,6 @@ class RPSgame
   end
 
   def start_new_round
-
     if human.won_round?
       display_human_won_round
       add_point(human, :main)
@@ -785,7 +750,6 @@ class RPSgame
 
     display_goodbye_message
   end
-
 end
 
 RPSgame.new.play
