@@ -711,11 +711,13 @@ class RPSgame
   end
 
   def display_history
-    display_history_question
-    choice = yes_or_no_validation(2)
+    unless game_over?
+      display_history_question
+      choice = yes_or_no_validation(2)
 
-    system "clear"
-    puts history if choice.start_with?('Y')
+      system "clear"
+      puts history if choice.start_with?('Y')
+    end
   end
 
   def play_again?
