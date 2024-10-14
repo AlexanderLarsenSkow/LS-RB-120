@@ -42,8 +42,7 @@ class Rock < Move
   end
 
   def <(other_move)
-    other_move.paper? || other_move.spock? ||
-      other_move.gun?
+    other_move.paper? || other_move.spock?
   end
 
 end
@@ -59,8 +58,7 @@ class Scissors < Move
   end
 
   def <(other_move)
-    other_move.rock? || other_move.spock? ||
-      other_move.gun?
+    other_move.rock? || other_move.spock?
   end
 
 end
@@ -76,8 +74,7 @@ class Paper < Move
   end
 
   def <(other_move)
-    other_move.scissors? || other_move.lizard? ||
-      other_move.gun?
+    other_move.scissors? || other_move.lizard?
   end
 
 end
@@ -93,8 +90,7 @@ class Spock < Move
   end
 
   def <(other_move)
-    other_move.paper? || other_move.lizard? ||
-      other_move.gun?
+    other_move.paper? || other_move.lizard?
   end
 
 end
@@ -110,25 +106,7 @@ class Lizard < Move
   end
 
   def <(other_move)
-    other_move.rock? || other_move.scissors? ||
-      other_move.gun?
-  end
-
-end
-
-class Gun < Move
-  def initialize
-    self.value = 'Gun'
-  end
-
-  def >(other_move)
-    other_move.rock? || other_move.scissors? ||
-      other_move.paper? || other_move.spock? ||
-      other_move.lizard?
-  end
-
-  def <(other_move)
-    false
+    other_move.rock? || other_move.scissors?
   end
 
 end
@@ -451,17 +429,6 @@ class FinalBarbarian < Barbarian2
 
 end
 
-class JamesBond < Computer
-  def set_name
-    self.name = 'James Bond'
-  end
-
-  def choose
-    self.move = Gun.new
-  end
-
-end
-
 class Score
   attr_accessor :points
 
@@ -557,8 +524,8 @@ module GameDisplay
       The game is simple! It's just like Rock, Paper, Scissors with some
       extra moves. In this version, you can choose what computer you will
       play against. Be warned, they all have their own personalities and will
-      act in different ways. Some will be unfair. Others will learn over time.
-      Figuring out their move set is part of the game!
+      act in different ways. Play is made up of rounds. Win 3 times and you
+      win the round. Win 3 rounds and you win the game.
     RULES
     puts ""
   end
@@ -635,7 +602,7 @@ module GameDisplay
       puts "Congratulations! You are the grand winner #{human}!"
 
     else
-      puts "Oh no! #{computer} took the day. There he is now dancing and laughing at you!"
+      puts "Oh no! #{computer} won the game! There he is now celebrating!"
     end
   end
 
