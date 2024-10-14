@@ -739,15 +739,11 @@ class RPSgame
         start_new_round
       end
 
-      if game_over?
-        display_grand_winner
-        break
-      end
-
       display_history
-      break unless play_again?
+      break if game_over? || !play_again?
     end
 
+    display_grand_winner
     display_goodbye_message
   end
 end
