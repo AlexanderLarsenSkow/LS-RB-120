@@ -10,7 +10,6 @@ class Board
     (1..9).each do |key|
       squares[key] = Square.new(INITIAL_MARKER)
     end
-
   end
 
   def get_square_at(key)
@@ -38,6 +37,10 @@ class Square
     self.marker = new_mark
   end
 
+  def ==(some_value)
+    marker == some_value
+  end
+
   private
 
   attr_writer :marker
@@ -54,7 +57,7 @@ end
 class Human < Player
 
   def move
-    choice = ''
+    choice = nil
     puts "Choose a square between 1-9."
 
     loop do
@@ -68,8 +71,14 @@ class Human < Player
 end
 
 class Computer < Player
-  def move
-    (1..9).to_a.sample
+  def move(board)
+    move = nil
+
+    loop do
+      move = (1..9).to_a.sample
+      break if board.squares[move] == Board::INITIAL_MARKER
+    end
+    move
   end
 end
 
@@ -96,7 +105,6 @@ module GameDisplays
     puts "  #{board.get_square_at(7)}   |    #{board.get_square_at(8)}    |  #{board.get_square_at(9)}"
     puts "      |         |"
     puts ""
-
   end
 end
 
@@ -113,7 +121,7 @@ class TTTGame
 
   def execute_moves
     human_move = human.move
-    computer_move = computer.move
+    computer_move = computer.move(board)
 
     board.set_square_at(human, human_move)
     board.set_square_at(computer, computer_move)
