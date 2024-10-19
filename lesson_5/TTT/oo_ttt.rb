@@ -1,4 +1,10 @@
 class Board
+  WINNING_LINES = [
+    [1, 2, 3], [4, 5, 6], [7, 8, 9],
+    [1, 4, 7], [2, 5, 8], [3, 6, 9],
+    [1, 5, 9], [3, 5, 7]
+  ]
+
   attr_reader :squares
 
   def initialize
@@ -10,6 +16,10 @@ class Board
 
   def full?
     empty_squares.empty?
+  end
+
+  def three_in_line?(line, marker)
+    line.all? { |key| squares[key] == marker }
   end
 
   def available?(move)
@@ -34,7 +44,7 @@ class Square
   INITIAL_MARKER = ' '
   X_MARKER = 'X'
   O_MARKER = 'O'
-  
+
   attr_reader :marker
 
   def initialize
@@ -71,7 +81,6 @@ class Player
 end
 
 class Human < Player
-
   def move(board)
     choice = nil
     puts "Choose a square: (#{board.empty_squares.join(', ')})"
@@ -79,7 +88,7 @@ class Human < Player
     loop do
       choice = gets.chomp.to_i
 
-      break if board.available?(choice)
+      break if (1..9).include?(choice) && board.available?(choice)
       puts "Bad choice."
     end
     choice
@@ -93,16 +102,21 @@ class Computer < Player
 end
 
 module GameDisplays
+  def clear
+    system "clear"
+  end
+
   def display_welcome_message
     puts "Welcome to Tic_Tac_Toe!"
   end
 
   def display_goodbye_message
+    clear
     puts "Thanks for playing!"
   end
 
   def display_board
-    system "clear"
+    clear
     puts " You: #{human.marker}    |    Computer: #{computer.marker}"
     puts ""
     puts "      |         |"
@@ -118,42 +132,94 @@ module GameDisplays
     puts "      |         |"
     puts ""
   end
+
+  def display_result
+    case determine_winning_marker
+      when human.marker then puts "You won!"
+      when computer.marker then puts "Oh no! The computer won!"
+      else
+        puts "Uh-oh. You tied!"
+    end
+  end
+
+  def display_play_again
+    puts "Do you want to play again? Y / N"
+  end
+end
+
+module GameValidation
+  def yes_or_no
+    choice = nil
+
+    loop do
+      choice = gets.chomp.upcase.delete(' ')
+
+      break if choice.start_with?('Y') || choice.start_with?('N')
+      puts "Error"
+    end
+    choice
+  end
 end
 
 class TTTGame
-  attr_reader :board, :human, :computer
+  attr_accessor :board
+  attr_reader :human, :computer
 
   include GameDisplays
+  include GameValidation
 
   def initialize
-    @board = Board.new
     @human = Human.new(Square::X_MARKER)
     @computer = Computer.new(Square::O_MARKER)
+  end
+
+  def someone_won?
+    !!determine_winning_marker
+  end
+
+  def determine_winning_marker
+    Board::WINNING_LINES.each do |line|
+      if board.three_in_line?(line, Square::X_MARKER)
+        return Square::X_MARKER
+
+      elsif board.three_in_line?(line, Square::O_MARKER)
+        return Square::O_MARKER
+      end
+    end
+    nil
   end
 
   def execute_moves
     human_move = human.move(board)
     board.set_square_at(human, human_move)
 
-    return if board.full?
+    return if someone_won? || board.full?
 
     computer_move = computer.move(board)
     board.set_square_at(computer, computer_move)
   end
 
+  def play_again?
+    display_play_again
+    yes_or_no.start_with?('Y')
+  end
+
   def play
     display_welcome_message
-    display_board
-
     loop do
-      execute_moves
+      self.board = Board.new
       display_board
 
-      break if board.full?
-      # break if someone_won? || board_full?
-    end
+      loop do
+        execute_moves
+        display_board
 
-  # display_result
+        break if someone_won? || board.full?
+      end
+      display_result
+
+      break unless play_again?
+    end
   display_goodbye_message
   end
 end
