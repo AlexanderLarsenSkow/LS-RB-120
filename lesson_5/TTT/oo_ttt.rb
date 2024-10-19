@@ -30,27 +30,22 @@ class Board
     squares.keys.select { |key| available?(key) }
   end
 
-  def get_square_at(key)
-    squares[key]
-  end
-
-  def set_square_at(player, move)
-    new_marker = player.marker
+  def []=(move, new_marker)
     squares[move].update_marker(new_marker)
   end
 
   def draw
     puts ""
     puts "      |         |"
-    puts "  #{get_square_at(1)}   |    #{get_square_at(2)}    |  #{get_square_at(3)}"
+    puts "  #{squares[1]}   |    #{squares[2]}    |  #{squares[3]}"
     puts "      |         |"
     puts "------+---------+------"
     puts "      |         |"
-    puts "  #{get_square_at(4)}   |    #{get_square_at(5)}    |  #{get_square_at(6)}"
+    puts "  #{squares[4]}   |    #{squares[5]}    |  #{squares[6]}"
     puts "      |         |"
     puts "------+---------+------"
     puts "      |         |"
-    puts "  #{get_square_at(7)}   |    #{get_square_at(8)}    |  #{get_square_at(9)}"
+    puts "  #{squares[7]}   |    #{squares[8]}    |  #{squares[9]}"
     puts "      |         |"
   end
 end
@@ -194,12 +189,12 @@ class TTTGame
 
   def execute_moves
     human_move = human.move(board)
-    board.set_square_at(human, human_move)
+    board[human_move] = human.marker
 
     return if someone_won? || board.full?
 
     computer_move = computer.move(board)
-    board.set_square_at(computer, computer_move)
+    board[computer_move] = computer.marker
   end
 
   def play_again?
