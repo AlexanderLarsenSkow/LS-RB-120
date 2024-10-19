@@ -1,15 +1,23 @@
 class Board
-  INITIAL_MARKER = ' '
-  X_MARKER = 'X'
-  O_MARKER = 'O'
-
   attr_reader :squares
 
   def initialize
     @squares = {}
     (1..9).each do |key|
-      squares[key] = Square.new(INITIAL_MARKER)
+      squares[key] = Square.new
     end
+  end
+
+  def full?
+    empty_squares.empty?
+  end
+
+  def available?(move)
+    squares[move].unmarked?
+  end
+
+  def empty_squares
+    squares.keys.select { |key| available?(key) }
   end
 
   def get_square_at(key)
@@ -23,10 +31,14 @@ class Board
 end
 
 class Square
+  INITIAL_MARKER = ' '
+  X_MARKER = 'X'
+  O_MARKER = 'O'
+  
   attr_reader :marker
 
-  def initialize(marker)
-    @marker = marker
+  def initialize
+    @marker = INITIAL_MARKER
   end
 
   def to_s
@@ -35,6 +47,10 @@ class Square
 
   def update_marker(new_mark)
     self.marker = new_mark
+  end
+
+  def unmarked?
+    self == INITIAL_MARKER
   end
 
   def ==(some_value)
@@ -56,14 +72,14 @@ end
 
 class Human < Player
 
-  def move
+  def move(board)
     choice = nil
-    puts "Choose a square between 1-9."
+    puts "Choose a square: (#{board.empty_squares.join(', ')})"
 
     loop do
       choice = gets.chomp.to_i
 
-      break if (1..9).include?(choice)
+      break if board.available?(choice)
       puts "Bad choice."
     end
     choice
@@ -72,13 +88,7 @@ end
 
 class Computer < Player
   def move(board)
-    move = nil
-
-    loop do
-      move = (1..9).to_a.sample
-      break if board.squares[move] == Board::INITIAL_MARKER
-    end
-    move
+    board.empty_squares.sample
   end
 end
 
@@ -92,6 +102,8 @@ module GameDisplays
   end
 
   def display_board
+    system "clear"
+    puts " You: #{human.marker}    |    Computer: #{computer.marker}"
     puts ""
     puts "      |         |"
     puts "  #{board.get_square_at(1)}   |    #{board.get_square_at(2)}    |  #{board.get_square_at(3)}"
@@ -115,31 +127,29 @@ class TTTGame
 
   def initialize
     @board = Board.new
-    @human = Human.new(Board::X_MARKER)
-    @computer = Computer.new(Board::O_MARKER)
+    @human = Human.new(Square::X_MARKER)
+    @computer = Computer.new(Square::O_MARKER)
   end
 
   def execute_moves
-    human_move = human.move
-    computer_move = computer.move(board)
-
+    human_move = human.move(board)
     board.set_square_at(human, human_move)
+
+    return if board.full?
+
+    computer_move = computer.move(board)
     board.set_square_at(computer, computer_move)
   end
 
   def play
-  display_welcome_message
+    display_welcome_message
+    display_board
 
     loop do
-      display_board
       execute_moves
-      # display_board
-      # break
+      display_board
 
-      # human.move
-      # break if someone_won? || board_full?
-
-      # computer.move
+      break if board.full?
       # break if someone_won? || board_full?
     end
 
