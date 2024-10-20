@@ -183,7 +183,7 @@ class TTTGame
 
   def determine_winning_marker
     Board::WINNING_LINES.each do |line|
-        
+
       if board.three_identical_markers?(line)
         return board.get_winning_marker(line)
       end
@@ -191,14 +191,15 @@ class TTTGame
     nil
   end
 
-  def execute_moves
-    human_move = human.move(board)
-    board[human_move] = human.marker
+  def execute_alternating_moves
+    if board.empty_squares.size.odd?
+      human_move = human.move(board)
+      board[human_move] = human.marker
 
-    return if someone_won? || board.full?
-
-    computer_move = computer.move(board)
-    board[computer_move] = computer.marker
+    else
+      computer_move = computer.move(board)
+      board[computer_move] = computer.marker
+    end
   end
 
   def play_again?
@@ -213,7 +214,7 @@ class TTTGame
       display_board
 
       loop do
-        execute_moves
+        execute_alternating_moves
         display_board
 
         break if someone_won? || board.full?
