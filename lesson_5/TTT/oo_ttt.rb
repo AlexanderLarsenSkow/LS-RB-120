@@ -18,6 +18,10 @@ class Board
     empty_squares.empty?
   end
 
+  def odd_number_remaining?
+    empty_squares.size.odd?
+  end
+
   def three_identical_markers?(line)
     markers = line.map { |key| squares[key].marker }
     markers.uniq.size == 1 && !markers.include?(Square::INITIAL_MARKER)
@@ -40,6 +44,7 @@ class Board
     squares[move].update_marker(new_marker)
   end
 
+  # rubocop:disable Metrics/AbcSize
   def draw
     puts ""
     puts "      |         |"
@@ -54,6 +59,7 @@ class Board
     puts "  #{squares[7]}   |    #{squares[8]}    |  #{squares[9]}"
     puts "      |         |"
   end
+  # rubocop:enable Metrics/AbcSize
 end
 
 class Square
@@ -139,10 +145,10 @@ module GameDisplays
 
   def display_result
     case determine_winning_marker
-      when human.marker then puts "You won!"
-      when computer.marker then puts "Oh no! The computer won!"
-      else
-        puts "Uh-oh. You tied!"
+    when human.marker then puts "You won!"
+    when computer.marker then puts "Oh no! The computer won!"
+    else
+      puts "Uh-oh. You tied!"
     end
   end
 
@@ -177,13 +183,16 @@ class TTTGame
     @computer = Computer.new(Square::O_MARKER)
   end
 
+  def set_board
+    self.board = Board.new
+  end
+
   def someone_won?
     !!determine_winning_marker
   end
 
   def determine_winning_marker
     Board::WINNING_LINES.each do |line|
-
       if board.three_identical_markers?(line)
         return board.get_winning_marker(line)
       end
@@ -192,13 +201,21 @@ class TTTGame
   end
 
   def execute_alternating_moves
-    if board.empty_squares.size.odd?
+    if board.odd_number_remaining?
       human_move = human.move(board)
       board[human_move] = human.marker
 
     else
       computer_move = computer.move(board)
       board[computer_move] = computer.marker
+    end
+  end
+
+  def play_round
+    loop do
+      execute_alternating_moves
+      display_board
+      break if someone_won? || board.full?
     end
   end
 
@@ -210,20 +227,15 @@ class TTTGame
   def play
     display_welcome_message
     loop do
-      self.board = Board.new
+      set_board
+
       display_board
-
-      loop do
-        execute_alternating_moves
-        display_board
-
-        break if someone_won? || board.full?
-      end
+      play_round
       display_result
 
       break unless play_again?
     end
-  display_goodbye_message
+    display_goodbye_message
   end
 end
 
