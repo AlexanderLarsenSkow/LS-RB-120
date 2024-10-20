@@ -162,7 +162,7 @@ class Human < Player
 
     puts "What's your name?"
     loop do
-      name = gets.chomp.strip
+      name = gets.chomp.capitalize.strip
 
       break unless name == ''
       puts "You have to call yourself something, silly!"
@@ -214,6 +214,37 @@ module GameDisplays
 
   def display_welcome_message
     puts "Welcome to Tic_Tac_Toe!"
+    sleep 1.5
+  end
+
+  def display_name_reaction
+    puts "Good to meet you #{human.name}! You are playing against #{computer.name}!"
+    sleep 2
+  end
+
+  def display_rules_question
+    puts "Do you want to see the rules?"
+  end
+
+  def display_teaching_board
+    puts "      |           |       "
+    puts "  1   |     2     |   3   "
+    puts "      |           |       "
+    puts "------+-----------+------ "
+    puts "      |           |       "
+    puts "  4   |     5     |   6   "
+    puts "      |           |       "
+    puts "------+-----------+------ "
+    puts "      |           |       "
+    puts "  7   |     8     |   9   "
+    puts "      |           |       "
+  end
+
+  def display_rules
+    clear
+    puts "Enter a number to pick a square. First to 3 squares in a row wins the round."
+    display_teaching_board
+    sleep 8
   end
 
   def display_goodbye_message
@@ -222,7 +253,7 @@ module GameDisplays
   end
 
   def display_score
-    puts " #{human.name}: #{human.score}    |    #{computer.name} #{computer.score}"
+    puts " #{human.name}: #{human.score}    |    #{computer.name}: #{computer.score}"
     puts ""
   end
 
@@ -271,8 +302,15 @@ class TTTGame
   include GameValidation
 
   def initialize
+    display_welcome_message
     @human = Human.new(Square::X_MARKER)
     @computer = Computer.new(Square::O_MARKER)
+    display_name_reaction
+  end
+
+  def see_rules?
+    display_rules_question
+    yes_or_no.start_with?('Y')
   end
 
   def set_board
@@ -332,7 +370,8 @@ class TTTGame
   end
 
   def play
-    display_welcome_message
+
+    display_rules if see_rules?
     loop do
       set_board
 
