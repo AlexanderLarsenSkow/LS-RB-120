@@ -132,17 +132,19 @@ class Square
 end
 
 class Player
+  attr_accessor :name
   attr_reader :marker, :score
 
   def initialize(marker)
     @marker = marker
     @score = 0
+    @name = set_name
   end
 
   def win_point
     self.score += 1
   end
-  
+
   def reset_score
     self.score = 0
   end
@@ -154,6 +156,20 @@ end
 
 class Human < Player
   include Readable
+
+  def set_name
+    name = nil
+
+    puts "What's your name?"
+    loop do
+      name = gets.chomp.strip
+
+      break unless name == ''
+      puts "You have to call yourself something, silly!"
+    end
+
+    self.name = name
+  end
 
   def move(board)
     choice = nil
@@ -170,6 +186,10 @@ class Human < Player
 end
 
 class Computer < Player
+  def set_name
+    self.name = ['Jeffrey', 'C-3PO', 'That One Guy'].sample
+  end
+
   def move(board)
     possible_moves = board.empty_squares
     move = possible_moves.sample
@@ -202,13 +222,13 @@ module GameDisplays
   end
 
   def display_score
-    puts " You: #{human.score}    |    Computer: #{computer.score}"
+    puts " #{human.name}: #{human.score}    |    #{computer.name} #{computer.score}"
     puts ""
   end
 
   def display_board
     clear
-    puts " You: #{human.marker}    |    Computer: #{computer.marker}"
+    puts " #{human.name}: #{human.marker}    |    #{computer.name}: #{computer.marker}"
     board.draw
     display_score
   end
@@ -243,7 +263,7 @@ end
 
 class TTTGame
   WINNING_SCORE = 3
-  
+
   attr_accessor :board
   attr_reader :human, :computer
 
