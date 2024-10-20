@@ -1,3 +1,20 @@
+module Readable
+  def joinor(choices_array, punctuation = ', ', delimiter = 'or')
+    choices = choices_array.map do |number|
+      if choices_array.last == number
+        "#{delimiter} #{number}"
+
+      elsif choices_array.size > 2
+        "#{number}#{punctuation}"
+
+      else
+        "#{number} "
+      end
+    end
+    choices.join
+  end
+end
+
 class Board
   WINNING_LINES = [
     [1, 2, 3], [4, 5, 6], [7, 8, 9],
@@ -103,9 +120,11 @@ class Player
 end
 
 class Human < Player
+  include Readable
+
   def move(board)
     choice = nil
-    puts "Choose a square: (#{board.empty_squares.join(', ')})"
+    puts "Choose a square: (#{joinor(board.empty_squares)})"
 
     loop do
       choice = gets.chomp.to_i
