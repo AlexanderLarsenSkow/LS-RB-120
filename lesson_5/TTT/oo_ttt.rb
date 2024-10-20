@@ -218,6 +218,7 @@ module GameDisplays
   end
 
   def display_name_reaction
+    clear
     puts "Good to meet you #{human.name}! You are playing against #{computer.name}!"
     sleep 2
   end
@@ -227,6 +228,7 @@ module GameDisplays
   end
 
   def display_teaching_board
+    puts ""
     puts "      |           |       "
     puts "  1   |     2     |   3   "
     puts "      |           |       "
@@ -238,13 +240,14 @@ module GameDisplays
     puts "      |           |       "
     puts "  7   |     8     |   9   "
     puts "      |           |       "
+    puts ""
   end
 
   def display_rules
     clear
     puts "Enter a number to pick a square. First to 3 squares in a row wins the round."
     display_teaching_board
-    sleep 8
+    press_enter
   end
 
   def display_goodbye_message
@@ -271,6 +274,7 @@ module GameDisplays
     else
       puts "Uh-oh. You tied!"
     end
+    sleep 2
   end
 
   def display_play_again
@@ -278,7 +282,7 @@ module GameDisplays
   end
 end
 
-module GameValidation
+module GamePrompts
   def yes_or_no
     choice = nil
 
@@ -290,6 +294,11 @@ module GameValidation
     end
     choice
   end
+
+  def press_enter
+    puts "Press Enter to continue."
+    gets.chomp
+  end
 end
 
 class TTTGame
@@ -299,7 +308,7 @@ class TTTGame
   attr_reader :human, :computer
 
   include GameDisplays
-  include GameValidation
+  include GamePrompts
 
   def initialize
     display_welcome_message
@@ -360,7 +369,6 @@ class TTTGame
   def end_round
     display_result
     calculate_score
-    sleep 2.5
     display_board
   end
 
@@ -370,8 +378,8 @@ class TTTGame
   end
 
   def play
-
     display_rules if see_rules?
+
     loop do
       set_board
 
