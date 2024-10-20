@@ -1,17 +1,17 @@
 module Readable
-  def joinor(choices_array, punctuation = ', ', delimiter = 'or')
-    choices = choices_array.map do |number|
-      if choices_array.last == number
+  def joinor(choices, punctuation = ', ', delimiter = 'or')
+    readable_choices = choices.map do |number|
+      if choices.size == 1
+        number
+
+      elsif choices.last == number
         "#{delimiter} #{number}"
 
-      elsif choices_array.size > 2
-        "#{number}#{punctuation}"
-
       else
-        "#{number} "
+        "#{number}#{punctuation}"
       end
     end
-    choices.join
+    readable_choices.join
   end
 end
 
@@ -39,8 +39,27 @@ class Board
     empty_squares.size.odd?
   end
 
+  def line_to_markers(line)
+    line.map { |key| squares[key].marker }
+  end
+
+  def two_in_a_row?(line)
+    markers = line_to_markers(line)
+    markers.uniq.size == 2 && markers.count(Square::INITIAL_MARKER) == 1
+  end
+
+  def find_open_marker(line)
+    line.each do |key|
+      return key if squares[key] == Square::INITIAL_MARKER
+    end
+  end
+
+  def two_computer_marks?(line, marker)
+    line.count { |key| squares[key] == marker } == 2
+  end
+
   def three_identical_markers?(line)
-    markers = line.map { |key| squares[key].marker }
+    markers = line_to_markers(line)
     markers.uniq.size == 1 && !markers.include?(Square::INITIAL_MARKER)
   end
 
@@ -138,7 +157,19 @@ end
 
 class Computer < Player
   def move(board)
-    board.empty_squares.sample
+    possible_moves = board.empty_squares
+    move = possible_moves.sample
+    move = 5 if possible_moves.include?(5)
+
+    Board::WINNING_LINES.each do |line|
+      smart_move = board.find_open_marker(line)
+
+      if board.two_computer_marks?(line, marker) || board.two_in_a_row?(line)
+        move = smart_move if possible_moves.include?(smart_move)
+        break
+      end
+    end
+    move
   end
 end
 
@@ -219,6 +250,7 @@ class TTTGame
     nil
   end
 
+  # make it dryer by just using player local var
   def execute_alternating_moves
     if board.odd_number_remaining?
       human_move = human.move(board)
