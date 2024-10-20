@@ -18,8 +18,14 @@ class Board
     empty_squares.empty?
   end
 
-  def three_in_line?(line, marker)
-    line.all? { |key| squares[key] == marker }
+  def three_identical_markers?(line)
+    markers = line.map { |key| squares[key].marker }
+    markers.uniq.size == 1 && !markers.include?(Square::INITIAL_MARKER)
+  end
+
+  def get_winning_marker(line)
+    first_square = line[0]
+    squares[first_square].marker
   end
 
   def available?(move)
@@ -177,11 +183,9 @@ class TTTGame
 
   def determine_winning_marker
     Board::WINNING_LINES.each do |line|
-      if board.three_in_line?(line, Square::X_MARKER)
-        return Square::X_MARKER
-
-      elsif board.three_in_line?(line, Square::O_MARKER)
-        return Square::O_MARKER
+        
+      if board.three_identical_markers?(line)
+        return board.get_winning_marker(line)
       end
     end
     nil
