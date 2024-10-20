@@ -94,6 +94,7 @@ class Board
     puts "      |         |"
     puts "  #{squares[7]}   |    #{squares[8]}    |  #{squares[9]}"
     puts "      |         |"
+    puts ""
   end
   # rubocop:enable Metrics/AbcSize
 end
@@ -131,11 +132,24 @@ class Square
 end
 
 class Player
-  attr_reader :marker
+  attr_reader :marker, :score
 
   def initialize(marker)
     @marker = marker
+    @score = 0
   end
+
+  def win_point
+    self.score += 1
+  end
+  
+  def reset_score
+    self.score = 0
+  end
+
+  private
+
+  attr_writer :score
 end
 
 class Human < Player
@@ -159,14 +173,14 @@ class Computer < Player
   def move(board)
     possible_moves = board.empty_squares
     move = possible_moves.sample
-    move = 5 if possible_moves.include?(5)
+    return 5 if possible_moves.include?(5)
 
     Board::WINNING_LINES.each do |line|
       smart_move = board.find_open_marker(line)
 
       if board.two_computer_marks?(line, marker) || board.two_in_a_row?(line)
-        move = smart_move if possible_moves.include?(smart_move)
-        break
+        return smart_move if possible_moves.include?(smart_move)
+
       end
     end
     move
@@ -187,10 +201,16 @@ module GameDisplays
     puts "Thanks for playing!"
   end
 
+  def display_score
+    puts " You: #{human.score}    |    Computer: #{computer.score}"
+    puts ""
+  end
+
   def display_board
     clear
     puts " You: #{human.marker}    |    Computer: #{computer.marker}"
     board.draw
+    display_score
   end
 
   def display_result
@@ -222,6 +242,8 @@ module GameValidation
 end
 
 class TTTGame
+  WINNING_SCORE = 3
+  
   attr_accessor :board
   attr_reader :human, :computer
 
@@ -250,6 +272,13 @@ class TTTGame
     nil
   end
 
+  def calculate_score
+    case determine_winning_marker
+    when human.marker then human.win_point
+    when computer.marker then computer.win_point
+    end
+  end
+
   # make it dryer by just using player local var
   def execute_alternating_moves
     if board.odd_number_remaining?
@@ -270,6 +299,13 @@ class TTTGame
     end
   end
 
+  def end_round
+    display_result
+    calculate_score
+    sleep 2.5
+    display_board
+  end
+
   def play_again?
     display_play_again
     yes_or_no.start_with?('Y')
@@ -282,7 +318,7 @@ class TTTGame
 
       display_board
       play_round
-      display_result
+      end_round
 
       break unless play_again?
     end
