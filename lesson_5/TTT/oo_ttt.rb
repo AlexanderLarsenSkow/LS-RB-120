@@ -389,20 +389,20 @@ class TTTGame
   end
 
   # make it dryer by just using player local var
-  def execute_alternating_moves
-    if board.odd_number_remaining?
-      human_move = human.move(board)
-      board[human_move] = human.marker
 
-    else
-      computer_move = computer.move(board)
-      board[computer_move] = computer.marker
-    end
+  def execute_moves(player)
+    player_move = player.move(board)
+    board[player_move] = player.marker
   end
 
   def play_round
     loop do
-      execute_alternating_moves
+      if board.odd_number_remaining?
+        execute_moves(human)
+      else
+        execute_moves(computer)
+      end
+
       display_board
       break if someone_won? || board.full?
     end
