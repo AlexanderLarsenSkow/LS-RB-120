@@ -1,3 +1,6 @@
+require 'yaml'
+DISPLAYS = YAML.load_file('ttt.yml')
+
 module Readable
   def joinor(choices, punctuation = ', ', delimiter = 'or')
     readable_choices = choices.map do |number|
@@ -149,6 +152,10 @@ class Player
     self.score = 0
   end
 
+  def to_s
+    name
+  end
+
   private
 
   attr_writer :score
@@ -160,12 +167,12 @@ class Human < Player
   def set_name
     name = nil
 
-    puts "What's your name?"
+    puts DISPLAYS['name_question']
     loop do
       name = gets.chomp.capitalize.strip
 
       break unless name == ''
-      puts "You have to call yourself something, silly!"
+      puts DISPLAYS['name_error']
     end
 
     self.name = name
@@ -173,13 +180,13 @@ class Human < Player
 
   def move(board)
     choice = nil
-    puts "Choose a square: (#{joinor(board.empty_squares)})"
+    puts "#{DISPLAYS['choose_square']} (#{joinor(board.empty_squares)})"
 
     loop do
       choice = gets.chomp.to_i
 
       break if (1..9).include?(choice) && board.available?(choice)
-      puts "Bad choice."
+      puts DISPLAYS['square_error']
     end
     choice
   end
@@ -213,18 +220,18 @@ module GameDisplays
   end
 
   def display_welcome_message
-    puts "Welcome to Tic_Tac_Toe!"
+    puts DISPLAYS['welcome']
     sleep 1.5
   end
 
   def display_name_reaction
     clear
-    puts "Good to meet you #{human.name}! You are playing against #{computer.name}!"
+    puts sprintf(DISPLAYS['name_reaction'], human, computer)
     sleep 2
   end
 
   def display_rules_question
-    puts "Do you want to see the rules?"
+    puts DISPLAYS['rules_question']
   end
 
   def display_teaching_board
@@ -245,40 +252,48 @@ module GameDisplays
 
   def display_rules
     clear
-    puts "Enter a number to pick a square. First to 3 squares in a row wins the round."
+    puts DISPLAYS['rules']
     display_teaching_board
     press_enter
   end
 
   def display_goodbye_message
     clear
-    puts "Thanks for playing!"
+    puts DISPLAYS['goodbye']
+  end
+
+  def format_board_info(human_data, computer_data)
+    " #{human}: #{human_data}    |    #{computer}: #{computer_data}"
   end
 
   def display_score
-    puts " #{human.name}: #{human.score}    |    #{computer.name}: #{computer.score}"
+    puts format_board_info(human.score, computer.score)
     puts ""
   end
 
   def display_board
     clear
-    puts " #{human.name}: #{human.marker}    |    #{computer.name}: #{computer.marker}"
+    puts format_board_info(human.marker, computer.marker)
     board.draw
     display_score
   end
 
   def display_result
     case determine_winning_marker
-    when human.marker then puts "You won!"
-    when computer.marker then puts "Oh no! The computer won!"
+    when human.marker
+      puts DISPLAYS['human_won']
+
+    when computer.marker
+      puts sprintf(DISPLAYS['comp_won'], computer.name)
+
     else
-      puts "Uh-oh. You tied!"
+      puts DISPLAYS['tie']
     end
     sleep 2
   end
 
   def display_play_again
-    puts "Do you want to play again? Y / N"
+    puts DISPLAYS['play_again_question']
   end
 end
 
@@ -290,13 +305,13 @@ module GamePrompts
       choice = gets.chomp.upcase.delete(' ')
 
       break if choice.start_with?('Y') || choice.start_with?('N')
-      puts "Error"
+      puts DISPLAYS['yes_no_error']
     end
     choice
   end
 
   def press_enter
-    puts "Press Enter to continue."
+    puts DISPLAYS['enter']
     gets.chomp
   end
 end
