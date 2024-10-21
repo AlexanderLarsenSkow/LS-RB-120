@@ -292,6 +292,15 @@ module GameDisplays
     sleep 2
   end
 
+  def display_grand_winner(player)
+    if player == :human
+      puts sprintf(DISPLAYS['human_grand_winner'], human)
+
+    else
+      puts sprintf(DISPLAYS['comp_grand_winner'], computer)
+    end
+  end
+
   def display_play_again
     puts DISPLAYS['play_again_question']
   end
@@ -361,6 +370,24 @@ class TTTGame
     end
   end
 
+  def grand_winner?
+    human.score == WINNING_SCORE || computer.score == WINNING_SCORE
+  end
+
+  def determine_grand_winner
+    if human.score == WINNING_SCORE
+      display_grand_winner(:human)
+
+    elsif computer.score == WINNING_SCORE
+      display_grand_winner(:computer)
+    end
+  end
+
+  def reset_scores
+    human.reset_score
+    computer.reset_score
+  end
+
   # make it dryer by just using player local var
   def execute_alternating_moves
     if board.odd_number_remaining?
@@ -387,6 +414,11 @@ class TTTGame
     display_board
   end
 
+  def end_game
+    determine_grand_winner
+    reset_scores
+  end
+
   def play_again?
     display_play_again
     yes_or_no.start_with?('Y')
@@ -401,6 +433,7 @@ class TTTGame
       display_board
       play_round
       end_round
+      end_game if grand_winner?
 
       break unless play_again?
     end

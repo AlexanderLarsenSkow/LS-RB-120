@@ -16,6 +16,9 @@ human_won: "You won!"
 comp_won: "Oh no! %s won!"
 tie: "Uh-oh. You tied!"
 
+human_grand_winner: "Congratulations %s! You are the champion of the world--erm, game!"
+comp_grand_winner: "Ruh-Roh! looks like %s is better at this game than you. Tough break!"
+
 play_again_question: "Do you want to play again? Y / N"
 yes_no_error: "Error"
 enter: "Press Enter to continue."
