@@ -205,9 +205,12 @@ class Computer < Player
     Board::WINNING_LINES.each do |line|
       smart_move = board.find_open_marker(line)
 
-      if board.two_computer_marks?(line, marker) || board.two_in_a_row?(line)
-        return smart_move if possible_moves.include?(smart_move)
+      move_is_possible = possible_moves.include?(smart_move)
+      two_computer_marks = board.two_computer_marks?(line, marker)
+      two_in_a_row = board.two_in_a_row?(line)
 
+      if (two_computer_marks || two_in_a_row) && move_is_possible
+        return smart_move
       end
     end
     move
@@ -226,7 +229,7 @@ module GameDisplays
 
   def display_name_reaction
     clear
-    puts sprintf(DISPLAYS['name_reaction'], human, computer)
+    puts format(DISPLAYS['name_reaction'], human, computer)
     sleep 2
   end
 
@@ -284,7 +287,7 @@ module GameDisplays
       puts DISPLAYS['human_won']
 
     when computer.marker
-      puts sprintf(DISPLAYS['comp_won'], computer.name)
+      puts format(DISPLAYS['comp_won'], computer.name)
 
     else
       puts DISPLAYS['tie']
@@ -294,10 +297,10 @@ module GameDisplays
 
   def display_grand_winner(player)
     if player == :human
-      puts sprintf(DISPLAYS['human_grand_winner'], human)
+      puts format(DISPLAYS['human_grand_winner'], human)
 
     else
-      puts sprintf(DISPLAYS['comp_grand_winner'], computer)
+      puts format(DISPLAYS['comp_grand_winner'], computer)
     end
   end
 
