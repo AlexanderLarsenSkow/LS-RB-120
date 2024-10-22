@@ -1,18 +1,15 @@
 module Readable
   def join_and(cards, punctuation = ', ', delimiter = 'and')
     card_faces = cards.map do |card|
-      face = card.face_value
-
       if card == cards.last
-        "#{delimiter} #{face}"
+        "#{delimiter} #{card}"
 
       elsif cards.size == 2
-        "#{face} "
+        "#{card} "
 
       else
-        "#{face}#{punctuation}"
+        "#{card}#{punctuation}"
       end
-
     end
     card_faces.join
   end
@@ -46,7 +43,7 @@ class Deck
     cards.reject! { |card| player.cards.include?(card) }
   end
 
-  def initial_deal(player)
+  def initial_deal!(player)
     2.times { |_| deal_one!(player) }
   end
 end
@@ -54,10 +51,11 @@ end
 class Card
   attr_reader :face_value, :point_value
 
+  # issue with 10 giving 11 points
   def calculate_point_value
     case
-    when ('2'..'10').include?(face_value[0]) then face_value.to_i
-    when ['J', 'Q', 'K'].include?(face_value[0]) then 10
+    when ('2'..'9').include?(face_value[0]) then face_value.to_i
+    when ['10, ''J', 'Q', 'K'].include?(face_value[0]) then 10
     when 'A' then 11
     end
   end
@@ -86,9 +84,19 @@ class CardPlayer
     @points = 0
   end
 
-  def display_cards
-    puts "You have the #{join_and(cards)}"
+  def calculate_points
+    total = 0
+
+    cards.each do |card|
+      total += card.point_value
+    end
+
+    self.points = total
   end
+
+  private
+
+  attr_writer :points
 end
 
 class Human < CardPlayer
@@ -99,8 +107,20 @@ class Dealer < CardPlayer
 
 end
 
+module GameDisplays
+  def display_human_cards
+    puts "You have the #{human.join_and(human.cards)}"
+  end
+
+  def display_one_dealer_card
+    puts "The dealer shows the #{dealer.cards[0]} and an unknown card!"
+  end
+end
+
 class TwentyOneGame
   attr_reader :deck, :human, :dealer
+
+  include GameDisplays
 
   def initialize
     @deck = Deck.new
@@ -110,25 +130,32 @@ class TwentyOneGame
 
   def deal_cards
     [dealer, human].each do |player|
-      deck.initial_deal(player)
+      deck.initial_deal!(player)
+      player.calculate_points
     end
   end
 
-  def display_one_dealer_card
-    puts "The dealer shows the #{dealer.cards[0]} and an unknown card!"
-  end
-
   def show_cards
-    human.display_cards
-    display_one_dealer_card
+    display_human_cards
+    # display_one_dealer_card
   end
 
   def play
     deal_cards
     # deck.deal_one!(human)
     show_cards
+    # human.calculate_points
+    p human.points
+    # p dealer.points
+
+    deck.deal_one!(human)
+    human.calculate_points
+    display_human_cards
+    p human.points
 
   end
 end
 
 TwentyOneGame.new.play
+
+p Card.new('10').point_value
