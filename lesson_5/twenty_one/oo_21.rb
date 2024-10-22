@@ -41,6 +41,7 @@ class Deck
   def deal_one!(player)
     player.cards << cards.shuffle[0]
     cards.reject! { |card| player.cards.include?(card) }
+    player.calculate_points
   end
 
   def initial_deal!(player)
@@ -51,12 +52,15 @@ end
 class Card
   attr_reader :face_value, :point_value
 
-  # issue with 10 giving 11 points
   def calculate_point_value
-    case
-    when ('2'..'9').include?(face_value[0]) then face_value.to_i
-    when ['10, ''J', 'Q', 'K'].include?(face_value[0]) then 10
-    when 'A' then 11
+    if ('2'..'9').include?(face_value[0])
+      face_value.to_i
+
+    elsif ['10', 'J', 'Q', 'K'].any? { |face| face_value.include?(face) }
+      10
+
+    elsif face_value.include?('A')
+      11
     end
   end
 
@@ -131,13 +135,12 @@ class TwentyOneGame
   def deal_cards
     [dealer, human].each do |player|
       deck.initial_deal!(player)
-      player.calculate_points
     end
   end
 
   def show_cards
     display_human_cards
-    # display_one_dealer_card
+    display_one_dealer_card
   end
 
   def play
@@ -146,16 +149,16 @@ class TwentyOneGame
     show_cards
     # human.calculate_points
     p human.points
-    # p dealer.points
+    p dealer.points
 
-    deck.deal_one!(human)
-    human.calculate_points
-    display_human_cards
-    p human.points
+    # deck.deal_one!(human)
+    # human.calculate_points
+    # display_human_cards
+    # p human.points
 
   end
 end
 
 TwentyOneGame.new.play
 
-p Card.new('10').point_value
+# p Card.new('7').point_value
