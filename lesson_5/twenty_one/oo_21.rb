@@ -1,5 +1,5 @@
 class Deck
-  CARDS = ['1', '2', '3', '4', '5', '6', '7', '8', '9',
+  CARDS = ['2', '3', '4', '5', '6', '7', '8', '9',
           '10', 'J', 'Q', 'K', 'A']
 
   SUITS = ["♠", "♣", "♦", "♥"]
@@ -36,7 +36,7 @@ class Card
 
   def calculate_point_value
     case
-    when ('1'..'10').include?(face_value[0]) then face_value.to_i
+    when ('2'..'10').include?(face_value[0]) then face_value.to_i
     when ['J', 'Q', 'K'].include?(face_value[0]) then 10
     when 'A' then 11
     end
@@ -63,6 +63,12 @@ class CardPlayer
     @cards = []
     @points = 0
   end
+
+  def display_cards
+    cards.each do |card|
+      puts "You have the #{card}"
+    end
+  end
 end
 
 class Human < CardPlayer
@@ -74,5 +80,38 @@ class Dealer < CardPlayer
 end
 
 class TwentyOneGame
+  attr_reader :deck, :human, :dealer
 
+  def initialize
+    @deck = Deck.new
+    @human = Human.new
+    @dealer = Dealer.new
+  end
+
+  def deal_cards
+    [dealer, human].each do |player|
+      deck.initial_deal(player)
+    end
+  end
+
+  def display_human_cards
+    puts "You have #{human.cards}"
+  end
+
+  def display_one_dealer_card
+    puts "The dealer shows the #{dealer.cards[0]}! and an unknown card."
+  end
+
+  def show_cards
+    human.display_cards
+    display_one_dealer_card
+  end
+
+  def play
+    deal_cards
+    show_cards
+
+  end
 end
+
+TwentyOneGame.new.play
