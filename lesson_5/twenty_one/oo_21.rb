@@ -20,15 +20,24 @@ class Deck
   def initialize
     @cards = create_deck
   end
+
+  def deal_one(player)
+    player.cards << cards.shuffle[0]
+    cards.reject! { |card| player.cards.include?(card) }
+  end
+
+  def initial_deal(player)
+    2.times { |_| deal_one(player) }
+  end
 end
 
 class Card
   attr_reader :face_value, :point_value
 
   def calculate_point_value
-    case face_value[0]
-    when ('1'..'10') then face_value.to_i
-    when ('J'..'Q') then 10
+    case
+    when ('1'..'10').include?(face_value[0]) then face_value.to_i
+    when ['J', 'Q', 'K'].include?(face_value[0]) then 10
     when 'A' then 11
     end
   end
@@ -47,8 +56,23 @@ class Card
   attr_writer :point_value # change Ace value with this.
 end
 
-# puts Deck.new.cards
+class CardPlayer
+  attr_reader :name, :cards, :points
 
-c = Card.new('K of Hearts')
+  def initialize
+    @cards = []
+    @points = 0
+  end
+end
 
-p c.point_value
+class Human < CardPlayer
+
+end
+
+class Dealer < CardPlayer
+
+end
+
+class TwentyOneGame
+
+end
