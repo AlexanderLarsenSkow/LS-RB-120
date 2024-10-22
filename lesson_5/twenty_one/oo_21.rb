@@ -1,3 +1,23 @@
+module Readable
+  def join_and(cards, punctuation = ', ', delimiter = 'and')
+    card_faces = cards.map do |card|
+      face = card.face_value
+
+      if card == cards.last
+        "#{delimiter} #{face}"
+
+      elsif cards.size == 2
+        "#{face} "
+
+      else
+        "#{face}#{punctuation}"
+      end
+
+    end
+    card_faces.join
+  end
+end
+
 class Deck
   CARDS = ['2', '3', '4', '5', '6', '7', '8', '9',
           '10', 'J', 'Q', 'K', 'A']
@@ -21,13 +41,13 @@ class Deck
     @cards = create_deck
   end
 
-  def deal_one(player)
+  def deal_one!(player)
     player.cards << cards.shuffle[0]
     cards.reject! { |card| player.cards.include?(card) }
   end
 
   def initial_deal(player)
-    2.times { |_| deal_one(player) }
+    2.times { |_| deal_one!(player) }
   end
 end
 
@@ -59,15 +79,15 @@ end
 class CardPlayer
   attr_reader :name, :cards, :points
 
+  include Readable
+
   def initialize
     @cards = []
     @points = 0
   end
 
   def display_cards
-    cards.each do |card|
-      puts "You have the #{card}"
-    end
+    puts "You have the #{join_and(cards)}"
   end
 end
 
@@ -94,12 +114,8 @@ class TwentyOneGame
     end
   end
 
-  def display_human_cards
-    puts "You have #{human.cards}"
-  end
-
   def display_one_dealer_card
-    puts "The dealer shows the #{dealer.cards[0]}! and an unknown card."
+    puts "The dealer shows the #{dealer.cards[0]} and an unknown card!"
   end
 
   def show_cards
@@ -109,6 +125,7 @@ class TwentyOneGame
 
   def play
     deal_cards
+    # deck.deal_one!(human)
     show_cards
 
   end
