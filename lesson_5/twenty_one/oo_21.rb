@@ -79,6 +79,9 @@ class Card
 end
 
 class CardPlayer
+  TOP_VALUE = 21
+  STAY_VALUE = 17
+
   attr_reader :name, :cards, :points
 
   include Readable
@@ -88,14 +91,27 @@ class CardPlayer
     @points = 0
   end
 
-  def calculate_points
-    total = 0
+  def get_total(card_points)
+    card_points.sum
+  end
 
-    cards.each do |card|
-      total += card.point_value
+  def determine_ace_value!(card_points)
+    total = get_total(card_points)
+
+    card_points.each_with_index do |point_value, index|
+      break if total <= TOP_VALUE
+      card_points[index] = 1 if point_value == 11
+    end
+  end
+
+  def calculate_points
+    card_points = cards.map(&:point_value)
+
+    if card_points.include?(11)
+      determine_ace_value!(card_points)
     end
 
-    self.points = total
+    self.points = get_total(card_points)
   end
 
   private
@@ -145,17 +161,9 @@ class TwentyOneGame
 
   def play
     deal_cards
-    # deck.deal_one!(human)
     show_cards
-    # human.calculate_points
     p human.points
     p dealer.points
-
-    # deck.deal_one!(human)
-    # human.calculate_points
-    # display_human_cards
-    # p human.points
-
   end
 end
 
