@@ -15,6 +15,21 @@ module Readable
   end
 end
 
+module Validation
+  def hit_or_stay
+  puts "Do you want to hit or stay? Enter h / s "
+    choice = ''
+
+    loop do
+      choice = gets.chomp.downcase.delete(' ')
+
+      break if choice.start_with?('h') ||choice.start_with?('s')
+      puts "Error: Enter one of the above."
+    end
+    choice
+  end
+end
+
 class Deck
   CARDS = ['2', '3', '4', '5', '6', '7', '8', '9',
           '10', 'J', 'Q', 'K', 'A']
@@ -121,13 +136,38 @@ class CardPlayer
     points > TOP_VALUE
   end
 
+  def take_turn!(deck)
+    loop do
+      break if busted?
+
+      if points < STAY_VALUE
+      deck.deal_one!(self)
+
+      else
+        break
+      end
+    end
+  end
+
   private
 
   attr_writer :points
 end
 
 class Human < CardPlayer
+  include Validation
 
+  def take_turn!(deck)
+
+    loop do
+      case hit_or_stay
+      when 'h'
+        deck.deal_one!(self)
+      else
+        break
+      end
+    end
+  end
 end
 
 class Dealer < CardPlayer
@@ -140,7 +180,11 @@ module GameDisplays
   end
 
   def display_one_dealer_card
-    puts "The dealer shows the #{dealer.cards[0]} and an unknown card!"
+    puts "The dealer shows the #{dealer.cards[1]} and an unknown card!"
+  end
+
+  def display_all_dealer_cards
+    puts "The dealer shows the #{join_and(dealer.cards)}!"
   end
 end
 
@@ -148,6 +192,7 @@ class TwentyOneGame
   attr_reader :deck, :human, :dealer
 
   include GameDisplays
+  include Readable
 
   def initialize
     @deck = Deck.new
@@ -169,6 +214,9 @@ class TwentyOneGame
   def play
     deal_cards
     show_cards
+    human.take_turn!(deck)
+    dealer.take_turn!(deck)
+    display_all_dealer_cards
     p human.points
     p dealer.points
   end
