@@ -78,19 +78,7 @@ class Card
   attr_writer :point_value # change Ace value with this.
 end
 
-class CardPlayer
-  TOP_VALUE = 21
-  STAY_VALUE = 17
-
-  attr_reader :name, :cards, :points
-
-  include Readable
-
-  def initialize
-    @cards = []
-    @points = 0
-  end
-
+module MathCapable
   def get_total(card_points)
     card_points.sum
   end
@@ -99,7 +87,7 @@ class CardPlayer
     total = get_total(card_points)
 
     card_points.each_with_index do |point_value, index|
-      break if total <= TOP_VALUE
+      break if total <= CardPlayer::TOP_VALUE
       card_points[index] = 1 if point_value == 11
     end
   end
@@ -112,6 +100,25 @@ class CardPlayer
     end
 
     self.points = get_total(card_points)
+  end
+end
+
+class CardPlayer
+  TOP_VALUE = 21
+  STAY_VALUE = 17
+
+  attr_reader :name, :cards, :points
+
+  include Readable
+  include MathCapable
+
+  def initialize
+    @cards = []
+    @points = 0
+  end
+
+  def busted?
+    points > TOP_VALUE
   end
 
   private
