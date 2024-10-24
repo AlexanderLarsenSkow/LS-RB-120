@@ -87,10 +87,6 @@ class Card
   def to_s
     face_value
   end
-
-  private
-
-  attr_writer :point_value # change Ace value with this.
 end
 
 module MathCapable
@@ -118,6 +114,21 @@ module MathCapable
   end
 end
 
+module CardDisplays
+  def display_cards
+    if instance_of?(Human)
+      puts "You have the #{join_and(cards)}!"
+
+    else
+      puts "The dealer shows the #{join_and(cards)}!"
+    end
+  end
+
+  def display_points
+    puts "You're at #{points}!"
+  end
+end
+
 class CardPlayer
   TOP_VALUE = 21
   STAY_VALUE = 17
@@ -126,6 +137,7 @@ class CardPlayer
 
   include Readable
   include MathCapable
+  include CardDisplays
 
   def initialize
     @cards = []
@@ -170,23 +182,17 @@ class Human < CardPlayer
   end
 end
 
+module DealerDisplays
+  def display_one_card
+    puts "The dealer shows the #{cards[1]} and an unknown card!"
+  end
+end
+
 class Dealer < CardPlayer
-
+  include DealerDisplays
 end
 
-module GameDisplays
-  def display_human_cards
-    puts "You have the #{human.join_and(human.cards)}"
-  end
-
-  def display_one_dealer_card
-    puts "The dealer shows the #{dealer.cards[1]} and an unknown card!"
-  end
-
-  def display_all_dealer_cards
-    puts "The dealer shows the #{join_and(dealer.cards)}!"
-  end
-end
+module GameDisplays; end
 
 class TwentyOneGame
   attr_reader :deck, :human, :dealer
@@ -207,8 +213,9 @@ class TwentyOneGame
   end
 
   def show_cards
-    display_human_cards
-    display_one_dealer_card
+    human.display_cards
+    dealer.display_one_card
+    human.display_points
   end
 
   def play
@@ -216,7 +223,7 @@ class TwentyOneGame
     show_cards
     human.take_turn!(deck)
     dealer.take_turn!(deck)
-    display_all_dealer_cards
+    dealer.display_cards
     p human.points
     p dealer.points
   end
