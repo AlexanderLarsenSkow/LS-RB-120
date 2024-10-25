@@ -28,6 +28,19 @@ module Validation
     end
     choice
   end
+
+  def yes_or_no
+    choice = ''
+
+    loop do
+      choice = gets.chomp.downcase.delete(' ')
+
+      break if choice.start_with?('y') || choice.start_with?('n')
+      puts "Enter y / n"
+    end
+
+    choice
+  end
 end
 
 class Deck
@@ -53,6 +66,10 @@ class Deck
     @cards = create_deck
   end
 
+  def reset
+    initialize
+  end
+
   def deal_one!(player)
     player.cards << cards.shuffle[0]
     cards.reject! { |card| player.cards.include?(card) }
@@ -62,6 +79,10 @@ class Deck
   def initial_deal!(player)
     2.times { |_| deal_one!(player) }
   end
+
+  private
+
+  attr_writer :cards
 end
 
 class Card
@@ -126,6 +147,10 @@ class CardPlayer
   def initialize
     @cards = []
     @points = 0
+  end
+
+  def reset
+    initialize
   end
 
   def busted?
@@ -219,6 +244,11 @@ class Dealer < CardPlayer
 end
 
 module GameDisplays
+  def display_welcome
+    puts "Welcome to Twenty One!"
+    sleep 2
+  end
+
   def display_human_win
     system "clear"
     puts "You won this round!"
@@ -228,12 +258,17 @@ module GameDisplays
     system "clear"
     puts "The dealer beat you this time!"
   end
+
+  def display_play_again_question
+    puts "Do you want to play again?"
+  end
 end
 
 class TwentyOneGame
   attr_reader :deck, :human, :dealer
 
   include GameDisplays
+  include Validation
 
   def initialize
     @deck = Deck.new
@@ -247,6 +282,12 @@ class TwentyOneGame
     end
   end
 
+  def show_cards
+    human.display_cards
+    human.display_points
+    dealer.display_one_card
+  end
+
   def determine_winner
     if human.points > dealer.points && !human.busted?
       display_human_win
@@ -256,21 +297,34 @@ class TwentyOneGame
     end
   end
 
-  def show_cards
-    human.display_cards
-    human.display_points
-    dealer.display_one_card
+  def play_again?
+    display_play_again_question
+
+    choice = yes_or_no
+    choice.start_with?('y')
+  end
+
+  def new_hand
+    [human, dealer, deck].each do |game_object|
+      game_object.reset
+    end
   end
 
   def play
-    deal_cards
-    show_cards
+    display_welcome
 
-    human.take_turn!(deck)
-    dealer.take_turn!(deck)
-    dealer.display_cards
+    loop do
+      new_hand
 
-    determine_winner
+      deal_cards
+      show_cards
+
+      human.take_turn!(deck)
+      dealer.take_turn!(deck)
+
+      determine_winner
+      break unless play_again?
+    end
   end
 end
 
