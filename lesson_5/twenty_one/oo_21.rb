@@ -156,10 +156,12 @@ module HumanDisplays
     def display_cards
       system "clear"
       puts "You have the #{join_and(cards)}!"
+      sleep 1.5
     end
 
   def display_points
     puts "You're at #{points}!"
+    sleep 1.5
   end
 
   def display_bust
@@ -195,10 +197,12 @@ end
 module DealerDisplays
   def display_one_card
     puts "The dealer shows the #{cards[1]} and an unknown card!"
+    sleep 1.5
   end
 
   def display_cards
     puts "The dealer shows the #{join_and(cards)}!"
+    sleep 1.5
   end
 
   def display_points
@@ -214,13 +218,22 @@ class Dealer < CardPlayer
   include DealerDisplays
 end
 
-module GameDisplays; end
+module GameDisplays
+  def display_human_win
+    system "clear"
+    puts "You won this round!"
+  end
+
+  def display_dealer_win
+    system "clear"
+    puts "The dealer beat you this time!"
+  end
+end
 
 class TwentyOneGame
   attr_reader :deck, :human, :dealer
 
   include GameDisplays
-  include Readable
 
   def initialize
     @deck = Deck.new
@@ -231,6 +244,15 @@ class TwentyOneGame
   def deal_cards
     [dealer, human].each do |player|
       deck.initial_deal!(player)
+    end
+  end
+
+  def determine_winner
+    if human.points > dealer.points && !human.busted?
+      display_human_win
+
+    else
+      display_dealer_win
     end
   end
 
@@ -247,8 +269,8 @@ class TwentyOneGame
     human.take_turn!(deck)
     dealer.take_turn!(deck)
     dealer.display_cards
-    # p human.points
-    # p dealer.points
+
+    determine_winner
   end
 end
 
