@@ -114,21 +114,6 @@ module MathCapable
   end
 end
 
-module CardDisplays
-  def display_cards
-    if instance_of?(Human)
-      puts "You have the #{join_and(cards)}!"
-
-    else
-      puts "The dealer shows the #{join_and(cards)}!"
-    end
-  end
-
-  def display_points
-    puts "You're at #{points}!"
-  end
-end
-
 class CardPlayer
   TOP_VALUE = 21
   STAY_VALUE = 17
@@ -137,7 +122,6 @@ class CardPlayer
 
   include Readable
   include MathCapable
-  include CardDisplays
 
   def initialize
     @cards = []
@@ -154,6 +138,8 @@ class CardPlayer
 
       if points < STAY_VALUE
       deck.deal_one!(self)
+      display_cards
+      display_points
 
       else
         break
@@ -166,17 +152,41 @@ class CardPlayer
   attr_writer :points
 end
 
+module HumanDisplays
+    def display_cards
+      system "clear"
+      puts "You have the #{join_and(cards)}!"
+    end
+
+  def display_points
+    puts "You're at #{points}!"
+  end
+
+  def display_bust
+    puts "Oof! You busted bro!"
+  end
+end
+
 class Human < CardPlayer
+  include HumanDisplays
   include Validation
 
   def take_turn!(deck)
-
     loop do
-      case hit_or_stay
-      when 'h'
-        deck.deal_one!(self)
-      else
+      if busted?
+        display_bust
+        return
+      end
+
+      choice = hit_or_stay
+
+      if choice.start_with?('s')
         break
+
+      elsif choice.start_with?('h')
+        deck.deal_one!(self)
+        display_cards
+        display_points
       end
     end
   end
@@ -185,6 +195,18 @@ end
 module DealerDisplays
   def display_one_card
     puts "The dealer shows the #{cards[1]} and an unknown card!"
+  end
+
+  def display_cards
+    puts "The dealer shows the #{join_and(cards)}!"
+  end
+
+  def display_points
+    puts "The dealer has #{points}!"
+  end
+
+  def display_bust
+    puts "The dealer busted! Whoo!"
   end
 end
 
@@ -214,18 +236,19 @@ class TwentyOneGame
 
   def show_cards
     human.display_cards
-    dealer.display_one_card
     human.display_points
+    dealer.display_one_card
   end
 
   def play
     deal_cards
     show_cards
+
     human.take_turn!(deck)
     dealer.take_turn!(deck)
     dealer.display_cards
-    p human.points
-    p dealer.points
+    # p human.points
+    # p dealer.points
   end
 end
 
