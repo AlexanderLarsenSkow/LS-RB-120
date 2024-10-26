@@ -179,11 +179,15 @@ class CardPlayer
       break if busted?
 
       if points < STAY_VALUE
-      deck.deal_one!(self)
-      display_cards
-      display_points
+        display_hit
+        deck.deal_one!(self)
+        display_cards
+        # display_points
 
       else
+        display_cards
+        display_stay
+        # display_points
         break
       end
     end
@@ -208,16 +212,17 @@ module HumanDisplays
   def display_cards
     system "clear"
     puts "You have the #{join_and(cards)}!"
-    sleep 1.5
+    sleep 1.3
   end
 
   def display_points
     puts "You're at #{points}!"
-    sleep 1.5
+    sleep 1.3
   end
 
   def display_bust
     puts "Oof! You busted bro!"
+    sleep 1.3
   end
 end
 
@@ -255,16 +260,29 @@ end
 module DealerDisplays
   def display_one_card
     puts "The dealer shows the #{cards[1]} and an unknown card!"
-    sleep 1.5
+    sleep 1.3
   end
 
   def display_cards
+    system "clear"
     puts "The dealer shows the #{join_and(cards)}!"
-    sleep 1.5
+    sleep 2
   end
 
   def display_points
     puts "The dealer has #{points}!"
+    sleep 2
+  end
+
+  def display_hit
+    system "clear"
+    puts "The dealer has decided to hit at #{points}!"
+    sleep 1.5
+  end
+
+  def display_stay
+    puts "The dealer has decided to stay at #{points}."
+    sleep 1.5
   end
 
   def display_bust
