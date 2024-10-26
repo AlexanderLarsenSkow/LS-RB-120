@@ -16,6 +16,18 @@ module Readable
 end
 
 module Validation
+  def get_name
+    name = ''
+
+    loop do
+      name = gets.chomp.strip.capitalize
+
+      break unless name == ''
+      puts "Enter a name silly!"
+    end
+    name
+  end
+
   def hit_or_stay
   puts "Do you want to hit or stay? Enter h / s "
     choice = ''
@@ -139,7 +151,8 @@ class CardPlayer
   TOP_VALUE = 21
   STAY_VALUE = 17
 
-  attr_reader :name, :cards, :points
+  attr_reader :cards, :points
+  attr_accessor :name
 
   include Readable
   include MathCapable
@@ -151,6 +164,10 @@ class CardPlayer
 
   def reset
     initialize
+  end
+
+  def set_name
+    self.name = "Player"
   end
 
   def busted?
@@ -178,11 +195,21 @@ class CardPlayer
 end
 
 module HumanDisplays
-    def display_cards
-      system "clear"
-      puts "You have the #{join_and(cards)}!"
-      sleep 1.5
-    end
+  def display_name_question
+    system "clear"
+    puts "What's your name?"
+  end
+
+  def display_name_reaction
+    puts "Welcome to Twenty One, #{name}!"
+    sleep 2
+  end
+
+  def display_cards
+    system "clear"
+    puts "You have the #{join_and(cards)}!"
+    sleep 1.5
+  end
 
   def display_points
     puts "You're at #{points}!"
@@ -197,6 +224,12 @@ end
 class Human < CardPlayer
   include HumanDisplays
   include Validation
+
+  def set_name
+    display_name_question
+    self.name = get_name
+    display_name_reaction
+  end
 
   def take_turn!(deck)
     loop do
@@ -241,6 +274,10 @@ end
 
 class Dealer < CardPlayer
   include DealerDisplays
+
+  def set_name
+    self.name = "The Dealer"
+  end
 end
 
 module GameDisplays
@@ -312,6 +349,7 @@ class TwentyOneGame
 
   def play
     display_welcome
+    human.set_name
 
     loop do
       new_hand
