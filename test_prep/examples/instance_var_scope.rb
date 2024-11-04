@@ -1,16 +1,16 @@
 class Fruit
 	attr_reader :type
-	
+
 	def initialize(type)
 		@type = type
 	end
-	
+
 	def i_am
 		puts "I am a #{type}!"
 	end
-	
+
 	def self.i_am
-		puts "I am a #{type}!"
+		puts "I am a #{@type}!"
 	end
 end
 

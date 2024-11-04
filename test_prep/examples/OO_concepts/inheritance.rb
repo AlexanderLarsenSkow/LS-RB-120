@@ -1,9 +1,27 @@
+module Flyable
+  def fly
+    "attack from above"
+  end
+end
+
 class Monster
   def attack
     "Hyahh!"
   end
 end
 
-class Vampire < Monster; end
+class Mummy < Monster; end
 
-p Vampire.new.attack # => "Hyahh!"
+class Vampire < Monster
+  include Flyable
+end
+
+class Ghost < Monster
+  include Flyable
+end
+
+p Vampire.new.fly # => "attack from above"
+p Ghost.new.fly # => "attack from above"
+
+
+p Mummy.new.fly # => NoMethodError
